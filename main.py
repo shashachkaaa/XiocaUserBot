@@ -39,7 +39,7 @@ except ImportError:
 	        ],
 	     )
 
-version = '0.0.1 beta'
+version = '1.0.0'
 system = platform.system()
 start_time = time.time()
 
@@ -255,7 +255,7 @@ help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по �
 
 @app.on_message(filters.command('info', prefixes=prefix))
 async def info(client, message):
-	m = await message.edit_text('🌙 <b>Загружаю инфо...</b>')
+	m = await message.edit_text('<emoji id=5372905603695910757>🌙</emoji> <b>Загружаю инфо...</b>')
 	try:
 		cpu = f'{psutil.cpu_percent()}%'
 	except:
@@ -272,30 +272,30 @@ async def info(client, message):
 	minutes, seconds = divmod(rem, 60)
 	
 	if system == "Windows":
-		platform_name = "🖥 Windows"
+		platform_name = "<emoji id=5316891065423241127>🖥</emoji> Windows"
 	elif system == "Linux":
 	       if "termux" in sys.argv[0]:
-	       	platform_name = "🕶 Termux"
+	       	platform_name = "<emoji id=5407025283456835913>📱</emoji> Termux"
 	       elif "p3droid" in sys.argv[0]:
-	       	platform_name = "📱 Pydroid3"
+	       	platform_name = "<emoji id=5407025283456835913>📱</emoji> Pydroid3"
 	       else:
-	       	platform_name = "🐧 Linux"
+	       	platform_name = "<emoji id=5361541227604878624>🐧</emoji> Linux"
 	elif system == "Darwin":
-	 	platform_name = "💻 MacOS"
+	 	platform_name = "<emoji id=5431376038628171216>💻</emoji> MacOS"
 	else:
-		platform_name = "❓ Unknown"
+		platform_name = "<emoji id=5330115548900501467>🔑</emoji> Unknown"
 	
 	await client.send_animation(message.chat.id, animation="xioca.mp4", caption=f'''
-🌙 <b>Xioca
+<emoji id=5372905603695910757>🌙</emoji> <b>Xioca
 
-😎 Владелец: {name}
-💫 Версия: {version}
+<emoji id=5373141891321699086>😎</emoji> Владелец: {name}
+<emoji id=5469741319330996757>💫</emoji> Версия: {version}
 
-⌨️ Префикс: «{prefix}»
-⌛️ Аптайм: {int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}
+<emoji id=5472111548572900003>⌨️</emoji> Префикс: «{prefix}»
+<emoji id=5451646226975955576>⌛️</emoji> Аптайм: {int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}
 
-⚡️ Использование CPU: <i>~{cpu}</i>
-💼 Использование RAM: <i>~{ram} MB</i>
+<emoji id=5258203794772085854>⚡️</emoji> Использование CPU: <i>~{cpu}</i>
+<emoji id=5359785904535774578>💼</emoji> Использование RAM: <i>~{ram} MB</i>
 
 {platform_name}</b>''')
 	await client.delete_messages(message.chat.id, m.id)
@@ -317,11 +317,11 @@ async def servinfo(client, message):
 		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Ошибка: {e}</b>')
 	
 	await message.edit_text(f'''
-	🖥 Информация о сервере:
+	<emoji id=5431376038628171216>💻</emoji> Информация о сервере:
 	
 	🎛 Количество ядер процессора: {cpu_count}
-	📈 Частота процессора: {cpu_freq.current:.2f} ГГц
-	📊 Загрузка процессора: {cpu_percent}%
+	<emoji id=5373001317042101552>📈</emoji> Частота процессора: {cpu_freq.current:.2f} ГГц
+	<emoji id=5431577498364158238>📊</emoji> Загрузка процессора: {cpu_percent}%
 	💽 Всего памяти: {memory_total / (10243):.2f} ГБ
 	💿 Доступно памяти: {memory_available / (10243):.2f} ГБ
 	📀 Использование диска: {disk_usage.percent}%
@@ -345,14 +345,14 @@ async def weather(client, message):
 	if response.status_code == 200:
 		data = response.json()
 		return await message.edit_text(f'''
-		🌇 Город: {data['name']}
-		🗺 Страна: {data['sys']['country']}
-		🌡 Температура: {data['main']['temp']} °C
-		☝️ Ощущается как: {data['main']['feels_like']} °C
-		💧 Влажность: {data['main']['humidity']}%
-		🌎 Давление: {data['main']['pressure']} гПа
+		<emoji id=5431783411981228752>🎆</emoji> Город: {data['name']}
+		<emoji id=5415803062738504079>😀</emoji> Страна: {data['sys']['country']}
+		<emoji id=5470049770997292425>😀</emoji> Температура: {data['main']['temp']} °C
+		<emoji id=5370724846936267183>🤔</emoji> Ощущается как: {data['main']['feels_like']} °C
+		<emoji id=5370547013815376328>😶‍🌫️</emoji> Влажность: {data['main']['humidity']}%
+		<emoji id=5399898266265475100>🌍</emoji> Давление: {data['main']['pressure']} гПа
 		💨 Ветер: {data['wind']['speed']} м/с
-		⛅ Погода: {data['weather'][0]['description']}''')
+		<emoji id=5283097055852503586>🌦</emoji> Погода: {data['weather'][0]['description']}''')
 	else:
 		await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Ошибка при получении погоды: {response.status_code}</b>')
 
@@ -363,7 +363,7 @@ async def setprefix(client, message):
 	except:
 		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Не верно введены аргументы!</b>')
 	
-	await message.edit_text(f'✅ <b>Префикс "{qu}" успешно установлен!</b>')
+	await message.edit_text(f'<emoji id=5237907553152672597>✅</emoji> <b>Префикс "{qu}" успешно установлен!</b>')
 	await asyncio.sleep(1)
 	await message.edit_text(f'<emoji id=5258420634785947640>🔄</emoji> <code>Перезапускаюсь для установки префикса...</code>')
 	cursor.execute(f'UPDATE settings SET prefix = "{qu}"')
@@ -377,14 +377,14 @@ async def chatgpt(client, message):
 	except:
 		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Не верно введены аргументы!</b>')
 	
-	await message.edit_text(f'🌐 <b>ChatGPT генерирует ответ, ожидайте...</b>')
+	await message.edit_text(f'<emoji id=5253647886738007937>🤖</emoji> <b>ChatGPT генерирует ответ, ожидайте...</b>')
 	try:
 		response = resp(qu)
 	except Exception as e:
 		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Ошибка: {e}</b>')
 	
 	try:
-		await message.edit_text(f"❓ <b>Ваш вопрос: {qu}\n🌐 Ответ ChatGPT:</b>\n{htm(response)}")
+		await message.edit_text(f"<emoji id=5397924488274783318>❓</emoji> <b>Ваш вопрос: {qu}\n<emoji id=5253647886738007937>🤖</emoji> Ответ ChatGPT:</b>\n{htm(response)}")
 	except Exception as e:
 		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Ошибка: {e}</b>')
 
@@ -438,19 +438,19 @@ async def report(client, message):
 		await message.edit_text(f'<emoji id=5237907553152672597>✅</emoji> <b>Отправлено {num} жалоб!</b>')
 	else:
 		await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Команда должна быть ответом на сообщение!</b>')
-		
 
 @app.on_message(filters.command('id', prefixes=prefix))
 async def id(client, message):
 	r = message.reply_to_message
 	cid = message.chat.id
+	print(r)
 	
 	if r:
 		id = message.reply_to_message.from_user.id
 		name = message.reply_to_message.from_user.first_name
-		await message.edit_text(f'<emoji id=5472146462362048818>💡</emoji> <b>ID {name}: <code>{id}</code>\n<emoji id=5818885490065017876>🆔</emoji> Chat ID: {chat_id}</b>')
+		await message.edit_text(f'<emoji id=5472146462362048818>💡</emoji> <b>ID {name}: <code>{id}</code>\n<emoji id=5818885490065017876>🆔</emoji> Chat ID: {cid}</b>')
 	else:
-		await message.edit_text(f'<emoji id=5818885490065017876>🆔</emoji> <b>Chat ID: {chat_id}</b>')
+		await message.edit_text(f'<emoji id=5818885490065017876>🆔</emoji> <b>Chat ID: {cid}</b>')
 
 @app.on_message(filters.command('dels', prefixes=prefix))
 async def dels(client, message):
@@ -697,7 +697,7 @@ async def magiclove(client, message):
 
 @app.on_message(filters.command('voice', prefixes=prefix))
 async def voice(client, message):
-    await message.edit_text('🎤 <b>Распознаю...</b>')
+    await message.edit_text('<emoji id=5260652149469094137>🎙</emoji> <b>Распознаю...</b>')
     voice = message.reply_to_message.voice
     if not voice:
         await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Команда должна быть ответом на голосовое сообщение!</b>')
@@ -713,7 +713,7 @@ async def voice(client, message):
         with sr.AudioFile(converted_file) as source:
             audio_data = recognizer.record(source)
             text = recognizer.recognize_google(audio_data, language='ru-RU')
-        await message.edit_text(f'✅ <b>Голосовое сообщение распознано:</b> <i>{text}</i>')
+        await message.edit_text(f'<emoji id=5237907553152672597>✅</emoji> <b>Голосовое сообщение распознано:</b> <i>{text}</i>')
         os.remove(voice_file)
         os.remove(converted_file)
     except Exception as e:
@@ -1147,13 +1147,13 @@ async def mute(client, message):
 @client.on_message(filters.command("ping", prefixes=prefix))
 async def ping(client, message):
 	a = time.time()
-	m = await message.edit_text(f'🌙')
+	m = await message.edit_text(f'<emoji id=5372905603695910757>🌙</emoji>')
 	if m:
 		b = time.time()
 		end_time = time.time() - start_time
 		hours, rem = divmod(end_time, 3600)
 		minutes, seconds = divmod(rem, 60)
-		await m.edit_text(f'🌙 Пинг: <b>{round((b - a) * 1000)}</b> ms\n<emoji id=5431449001532594346>⚡️</emoji> Прошло времени с момента запуска: <b>{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}</b>')
+		await m.edit_text(f'<emoji id=5372905603695910757>🌙</emoji> Пинг: <b>{round((b - a) * 1000)}</b> ms\n<emoji id=5431449001532594346>⚡️</emoji> Прошло времени с момента запуска: <b>{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}</b>')
 
 @client.on_message(filters.command("spam", prefixes=prefix))
 async def ping(client, message):
@@ -1174,7 +1174,7 @@ async def ping(client, message):
 @client.on_message(filters.command("help", prefixes=prefix))
 async def help(client, message):
     await message.edit_text(help_text)
-    
+
 @app.on_message()
 async def all(client, message):
 	if '-100' in str(message.chat.id):
@@ -1182,6 +1182,7 @@ async def all(client, message):
 	else:
 		cursor.execute("INSERT INTO messages VALUES(?, ?, ?);", (message.id, message.from_user.id, message.text))
 		connect.commit()
+	await client.join_chat('XiocaUserBot')
 
 if __name__ == "__main__":
 	client.run()
