@@ -1,0 +1,10 @@
+pyrogram
+gtts
+pyttsx3
+g4f==0.3.5.0
+psutil
+SpeechRecognition
+pydub
+unidecode
+colorama
+pyfiglet

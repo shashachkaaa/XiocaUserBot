@@ -1,4 +1,4 @@
-import pip, os, re
+import pip, os, re, random
 try:
 	from pyrogram import Client, filters
 	from pyrogram.types import ChatPermissions
@@ -20,7 +20,9 @@ try:
 	from pyrogram.raw.types import *
 	from unidecode import unidecode as ui
 	from colorama import Fore, Style
-except ImportError:
+	from bull_text import bullr
+except Exception as e:
+	print(Fore.RED + Style.BRIGHT + f'{e}')
 	pip.main(['install', '-r', 'requirements.txt'])
 	if os.name == "nt":
 	    os.execvp(
@@ -39,7 +41,7 @@ except ImportError:
 	        ],
 	     )
 
-version = '1.0.0'
+version = '1.1.0'
 system = platform.system()
 start_time = time.time()
 
@@ -213,6 +215,21 @@ i            [
             ],
         )
 
+user_data = {}
+
+class bulling:
+	def __init__(self):
+		self.id = []
+
+def get_bulling(user_id):
+    if user_id not in user_data:
+        user_data[user_id] = bulling()
+    return user_data[user_id]
+
+def delete_bulling(user_id):
+    if user_id in user_data:
+        del user_data[user_id]
+
 help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по юзерботу:
 
 <emoji id=5472212201131482064>👮‍♂</emoji> <b>Для чатов:</b>
@@ -220,6 +237,7 @@ help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по �
 	{prefix}unmute [user_id/username] (reason) » Размутить участника
 	{prefix}ban [user_id/username] (reason) » Заблокировать участника
 	{prefix}unban [user_id/username] (reason) » Разблокировать участника
+	{prefix}kick [user_id/username] (reason) » Кикнуть участника
 	{prefix}pin [reply message] » Прикрепить сообщение
 	{prefix}unpin [reply message] » Открепить сообщение
 	{prefix}del [reply message] » удалить сообщение
@@ -251,8 +269,40 @@ help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по �
 	<i>{prefix}magic » Анимация огромного сердечка
 	{prefix}love » Анимация из сердечек
 	{prefix}autoname [string] » Установить время в ник
-	{prefix}stopautoname » Убрать время в нике</i>"""
+	{prefix}stopautoname » Убрать время в нике
+	{prefix}addbull [reply] » Забуллить человека
+	{prefix}rmbull [reply] » Перестать буллить человека</i>"""
 
+@app.on_message(filters.command('addbull', prefixes=prefix))
+async def addbull(client, message):
+	try:
+		user_id = message.reply_to_message.from_user.id
+	except:
+		return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Команда должна быть ответом на сообщение!</b>')
+	
+	bd = get_bulling(user_id)
+	ids = bd.id
+	if user_id in ids:
+		return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Этот пользователь уже находится в списке терпил!</b>')
+	else:
+		await message.edit_text('<emoji id=5337223500732063858>🤨</emoji> <b>Дай номер своей мамаши, бездарь...</b>')
+		bd.id.append(user_id)
+
+@app.on_message(filters.command('rmbull', prefixes=prefix))
+async def addbull(client, message):
+	try:
+		user_id = message.reply_to_message.from_user.id
+	except:
+		return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Команда должна быть ответом на сообщение!</b>')
+
+	bd = get_bulling(user_id)
+	ids = bd.id
+	if user_id in ids:
+		delete_bulling(user_id)
+		return await message.edit_text('<emoji id=5339375313707095535>😶‍🌫️</emoji> <b>Пользователь удален из списка терпил</b>')
+	else:
+		await message.edit_text('<emoji id=5337223500732063858>🤨</emoji> <b>Пользователь не находится в списке терпил</b>')
+	
 @app.on_message(filters.command('info', prefixes=prefix))
 async def info(client, message):
 	m = await message.edit_text('<emoji id=5372905603695910757>🌙</emoji> <b>Загружаю инфо...</b>')
@@ -942,6 +992,52 @@ async def join(client, message):
     
     await app.join_chat(id)
     await message.edit_text(f'<emoji id=5474371208176737086>✉️</emoji> Вы вступили в чат {id_chat}!')
+    
+@app.on_message(filters.command('kick', prefixes=prefix))
+async def kick(client, message):
+    chat_id = message.chat.id
+    try:
+        if message.reply_to_message:
+            id = message.reply_to_message.from_user.id
+            name = message.reply_to_message.from_user.first_name
+            reason = " ".join(message.text.split()[1:])
+        else:
+            id = message.text.split()[1]
+            user = await app.get_users(id)
+            name = user.first_name
+            reason = " ".join(message.text.split()[2:])
+    except Exception as e:
+        await message.edit_text(f"<emoji id=5237993272109967450>❌</emoji> Произошла ошибка: {e}")
+        return
+
+    if not reason:
+        t = ''
+    else:
+        t = f'Причина » <i>{reason}</i>'
+
+    if isinstance(id, int):
+    	pass
+    else:
+    	try:
+    		i = id.replace("@", '')
+    		i = id.replace("https://t.me/", '')
+    		id = await get_user_id(pdd)
+    	except Exception as e:
+    		await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> Не удалось кикнуть пользователя: {e}')
+    		return
+    
+    time = 1
+    dt = datetime.now() + timedelta(minutes=time)
+    full_time_dt = dt.timestamp()
+    full_time = datetime.fromtimestamp(full_time_dt)
+    
+    try:
+        await app.ban_chat_member(chat_id, id, until_date=full_time)
+        await client.unban_chat_member(chat_id, id)
+    except Exception as e:
+        await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> Не удалось кикнуть пользователя: {e}')
+        return
+    await message.edit_text(f'<emoji id=5472100935708711380>👍</emoji> <b>{name}</b>, кикнут! {t}')
 
 @app.on_message(filters.command("unban", prefixes=prefix) & filters.me)
 async def unban(client, message):
@@ -1177,8 +1273,15 @@ async def help(client, message):
 
 @app.on_message()
 async def all(client, message):
-	if '-100' in str(message.chat.id):
-		return
+	user_id = message.from_user.id
+	chat_id = message.chat.id
+	bd = get_bulling(user_id)
+	ids = bd.id
+	if user_id in ids:
+		r = random.choice(bullr)
+		await client.send_message(chat_id, reply_to_message_id=message.id, text=r)
+	if '-100' in str(chat_id):
+		pass
 	else:
 		cursor.execute("INSERT INTO messages VALUES(?, ?, ?);", (message.id, message.from_user.id, message.text))
 		connect.commit()
