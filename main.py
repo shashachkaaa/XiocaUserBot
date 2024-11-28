@@ -1271,6 +1271,16 @@ async def ping(client, message):
 async def help(client, message):
     await message.edit_text(help_text)
 
+@app.on_message(filters.reply)
+async def allreply(client, message):
+	user_id = message.from_user.id
+	chat_id = message.chat.id
+	bd = get_bulling(user_id)
+	ids = bd.id
+	if user_id in ids:
+		r = random.choice(bullr)
+		await client.send_message(chat_id, reply_to_message_id=message.id, text=r)
+
 @app.on_message()
 async def all(client, message):
 	user_id = message.from_user.id
