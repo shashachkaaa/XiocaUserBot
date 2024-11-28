@@ -8,3 +8,4 @@ pydub
 unidecode
 colorama
 pyfiglet
+pytz
