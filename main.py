@@ -22,7 +22,6 @@ try:
 	from colorama import Fore, Style
 	from bull_text import bullr
 except Exception as e:
-	print(Fore.RED + Style.BRIGHT + f'{e}')
 	pip.main(['install', '-r', 'requirements.txt'])
 	if os.name == "nt":
 	    os.execvp(
