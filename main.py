@@ -5,7 +5,6 @@ try:
 	from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 	from gtts import gTTS
 	import sqlite3, logging, time, requests, asyncio, pyttsx3, datetime, random, json, g4f, html, psutil, platform, sys, pyfiglet
-#	from config import api_id, api_hash, id
 	from datetime import datetime, timedelta
 	from time import gmtime, strptime, strftime
 	from io import StringIO
@@ -22,6 +21,7 @@ try:
 	from colorama import Fore, Style
 	from bull_text import bullr
 except Exception as e:
+	print(e)
 	pip.main(['install', '-r', 'requirements.txt'])
 	if os.name == "nt":
 	    os.execvp(
@@ -40,7 +40,6 @@ except Exception as e:
 	        ],
 	     )
 
-version = '1.1.0'
 system = platform.system()
 start_time = time.time()
 
@@ -81,11 +80,11 @@ if authed:
 # Если пользователь не авторизован, запросите код подтверждения
 else:
     # Запрос кода подтверждения
-    phone_number = input("Введите ваш номер телефона: ")
+    phone_number = input(Fore.YELLOW + Style.BRIGHT + "Введите ваш номер телефона: ")
     code = client.send_code(phone_number)
 
     # Ввод кода подтверждения
-    input_code = input("Введите код подтверждения: ")
+    input_code = input(Fore.YELLOW + Style.BRIGHT + "Введите код подтверждения: ")
 
     # Подтверждение номера телефона
     client.sign_in(phone_number, input_code)
@@ -174,7 +173,9 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS settings(
 	tags_chat INT,
 	tags STRING,
 	dels_chat INT,
-	dels STRING
+	dels STRING,
+	version STRING,
+	last_time STRING
 )
 """)
 cursor.execute("""CREATE TABLE IF NOT EXISTS messages(
@@ -188,7 +189,8 @@ def get_prefix():
 	try:
 		get_pref = cursor.execute(f'SELECT prefix from settings').fetchone()[0]
 	except:
-		cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 0, 0, 0))
+		from version import v
+		cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 0, 0, 0, version, 'off'))
 		connect.commit()
 	get_pref = cursor.execute(f'SELECT prefix from settings').fetchone()[0]
 	return get_pref
@@ -272,6 +274,38 @@ help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по �
 	{prefix}addbull [reply] » Забуллить человека
 	{prefix}rmbull [reply] » Перестать буллить человека</i>"""
 
+@app.on_message(filters.command('update', prefixes=prefix))
+async def update(client, message):
+	await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Проверка обновлений...</b>')
+	try:
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
+	except:
+		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
+		subprocess.run("pkg install wget", shell=True, capture_output=True)
+		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Проверка обновлений...</b>')
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
+	from version import v
+	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
+	if ver == v:
+		return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
+	else:
+		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/bull_text.py", shell=True, capture_output=True)
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/requirements.txt", shell=True, capture_output=True)
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/main.py", shell=True, capture_output=True)
+		await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления установлены. Через 5 секунд юзербот перезапуститься для завершения обновления...</b>')
+		await asyncio.sleep(5)
+		m = await message.edit_text('<emoji id=5258420634785947640>🔄</emoji> <b>Перезагружаюсь...</b>')
+		if m:
+			cursor.execute(f'UPDATE settings SET last_time = "{time.time()}"')
+			connect.commit()
+			restart()
+			ti = cursor.execute(f'SELECT last_time from settings').fetchone()[0]
+			end_time = ti - start_time
+			hours, rem = divmod(end_time, 3600)
+			minutes, seconds = divmod(rem, 60)
+			await m.edit_text(f'<emoji id=5260463209562776385>✅</emoji> <b>Юзербот успешно перезагружен за {int(seconds):02d} секунд!</b>')
+
 @app.on_message(filters.command('addbull', prefixes=prefix))
 async def addbull(client, message):
 	try:
@@ -319,6 +353,7 @@ async def info(client, message):
 	end_time = time.time() - start_time
 	hours, rem = divmod(end_time, 3600)
 	minutes, seconds = divmod(rem, 60)
+	version = cursor.execute(f'SELECT version from settings').fetchone()[0]
 	
 	if system == "Windows":
 		platform_name = "<emoji id=5316891065423241127>🖥</emoji> Windows"
