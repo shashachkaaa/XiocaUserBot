@@ -190,7 +190,7 @@ def get_prefix():
 		get_pref = cursor.execute(f'SELECT prefix from settings').fetchone()[0]
 	except:
 		from version import v
-		cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 0, 0, 0, version, 'off'))
+		cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 0, 0, 0, v, 'off'))
 		connect.commit()
 	get_pref = cursor.execute(f'SELECT prefix from settings').fetchone()[0]
 	return get_pref
@@ -378,10 +378,10 @@ async def info(client, message):
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
 		subprocess.run("pkg install wget", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
-	from version import v
 	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
+	from version import v
 	
-	if v == ver:
+	if ver == v:
 		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {ver} актуальная'
 	else:
 		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {ver} устаревшая. Введите <code>{prefix}update</code> для обновления.'
