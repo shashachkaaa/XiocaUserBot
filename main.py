@@ -290,6 +290,8 @@ async def update(client, message):
 		return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
 	else:
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
+		cursor.execute(f'UPDATE settings SET version = {v}')
+		connect.commit()
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/bull_text.py", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/requirements.txt", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/main.py", shell=True, capture_output=True)
