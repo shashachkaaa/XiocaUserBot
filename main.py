@@ -298,15 +298,15 @@ async def update(client, message):
 		await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления установлены. Через 5 секунд юзербот перезапустится для завершения обновления...</b>')
 		await asyncio.sleep(5)
 		m = await message.edit_text('<emoji id=5258420634785947640>🔄</emoji> <b>Перезагружаюсь...</b>')
-		if m:
-			cursor.execute(f'UPDATE settings SET last_time = "{time.time()}"')
-			connect.commit()
-			restart()
-			ti = cursor.execute(f'SELECT last_time from settings').fetchone()[0]
-			end_time = ti - start_time
-			hours, rem = divmod(end_time, 3600)
-			minutes, seconds = divmod(rem, 60)
-			await m.edit_text(f'<emoji id=5260463209562776385>✅</emoji> <b>Юзербот успешно перезагружен за {int(seconds):02d} секунд!</b>')
+#		if m:
+#			cursor.execute(f'UPDATE settings SET last_time = "{time.time()}"')
+#			connect.commit()
+#			restart()
+#			ti = cursor.execute(f'SELECT last_time from settings').fetchone()[0]
+#			end_time = ti - start_time
+#			hours, rem = divmod(end_time, 3600)
+#			minutes, seconds = divmod(rem, 60)
+#			await m.edit_text(f'<emoji id=5260463209562776385>✅</emoji> <b>Юзербот успешно перезагружен за {int(seconds):02d} секунд!</b>')
 
 @app.on_message(filters.command('addbull', prefixes=prefix))
 async def addbull(client, message):
