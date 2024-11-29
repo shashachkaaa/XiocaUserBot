@@ -258,13 +258,14 @@ help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по �
 	{prefix}creategroup [string] » Создать чат
 	{prefix}dels [on/off] » Автосохранение удаленных сообщений
 	{prefix}tags [on/off] » Отключить уведомления при упомнинании вас в чатах
-	{prefix}shifr (text) » транслит на английский
-	{prefix}report (reply) (int) » закидать репортами
-	{prefix}gpt [string] » запрос к ChatGPT
-	{prefix}setprefix [string] » установить префикс к командам
-	{prefix}weather [string] » узнать погоду в городе
-	{prefix}serverinfo »  узнать информацию о сервере
-	{prefix}info » узнать информацию о юзерботе</i>
+	{prefix}shifr (text) » Транслит на английский
+	{prefix}report (reply) (int) » Закидать репортами
+	{prefix}gpt [string] » Запрос к ChatGPT
+	{prefix}setprefix [string] » Установить префикс к командам
+	{prefix}weather [string] » Узнать погоду в городе
+	{prefix}serverinfo »  Узнать информацию о сервере
+	{prefix}info » Узнать информацию о юзерботе
+	{prefix}update » Обновить юзербота</i>
 
 <emoji id=5319259490778886242>🤩</emoji> <b>Анимации/плюшки:</b>
 	<i>{prefix}magic » Анимация огромного сердечка
@@ -355,7 +356,6 @@ async def info(client, message):
 	end_time = time.time() - start_time
 	hours, rem = divmod(end_time, 3600)
 	minutes, seconds = divmod(rem, 60)
-	version = cursor.execute(f'SELECT version from settings').fetchone()[0]
 	
 	if system == "Windows":
 		platform_name = "<emoji id=5316891065423241127>🖥</emoji> Windows"
@@ -370,12 +370,26 @@ async def info(client, message):
 	 	platform_name = "<emoji id=5431376038628171216>💻</emoji> MacOS"
 	else:
 		platform_name = "<emoji id=5330115548900501467>🔑</emoji> Unknown"
+
+	try:
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
+	except:
+		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
+		subprocess.run("pkg install wget", shell=True, capture_output=True)
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
+	from version import v
+	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
+	
+	if v == ver:
+		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {ver} актуальная'
+	else:
+		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {ver} устаревшая. Введите <code>{prefix}update</code> для обновления.'
 	
 	await client.send_animation(message.chat.id, animation="xioca.mp4", caption=f'''
 <emoji id=5372905603695910757>🌙</emoji> <b>Xioca
 
 <emoji id=5373141891321699086>😎</emoji> Владелец: {name}
-<emoji id=5469741319330996757>💫</emoji> Версия: {version}
+{tv}
 
 <emoji id=5472111548572900003>⌨️</emoji> Префикс: «{prefix}»
 <emoji id=5451646226975955576>⌛️</emoji> Аптайм: {int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}
