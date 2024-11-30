@@ -273,7 +273,8 @@ help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по �
 	{prefix}autoname [string] » Установить время в ник
 	{prefix}stopautoname » Убрать время в нике
 	{prefix}addbull [reply] » Забуллить человека
-	{prefix}rmbull [reply] » Перестать буллить человека</i>"""
+	{prefix}rmbull [reply] » Перестать буллить человека
+	{prefix}spam (int) [string/reply] » Спам текстом</i>"""
 
 @app.on_message(filters.command('update', prefixes=prefix))
 async def update(client, message):
@@ -328,8 +329,13 @@ async def addbull(client, message):
 	if user_id in ids:
 		return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Этот пользователь уже находится в списке терпил!</b>')
 	else:
-		await message.edit_text('<emoji id=5337223500732063858>🤨</emoji> <b>Дай номер своей мамаши, бездарь...</b>')
-		bd.id.append(user_id)
+		me = await client.get_me()
+		me_id = me.id
+		if me_id == user_id:
+			await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Нельзя вписать себя в терпил!</b>')
+		else:
+			await message.edit_text('<emoji id=5337223500732063858>🤨</emoji> <b>Дай номер своей мамаши, бездарь...</b>')
+			bd.id.append(user_id)
 
 @app.on_message(filters.command('rmbull', prefixes=prefix))
 async def addbull(client, message):
@@ -441,9 +447,8 @@ async def servinfo(client, message):
 
 @app.on_message(filters.command('weather', prefixes=prefix))
 async def weather(client, message):
-	try:
-		qu = " ".join(message.text.split()[1:])
-	except:
+	qu = " ".join(message.text.split()[1:])
+	if qu == '':
 		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Не верно введены аргументы!</b>')
 	key = '18f76e3ac0c48dee34905f0c9e2e51d1'
 	ed = 'metric'
@@ -467,10 +472,9 @@ async def weather(client, message):
 
 @app.on_message(filters.command('setprefix', prefixes=prefix))
 async def setprefix(client, message):
-	try:
-		qu = " ".join(message.text.split()[1:])
-	except:
-		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Не верно введены аргументы!</b>')
+	qu = " ".join(message.text.split()[1:])
+	if len(qu) >= 2:
+		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Префикс не может быть больше 1 символа!</b>')
 	
 	await message.edit_text(f'<emoji id=5237907553152672597>✅</emoji> <b>Префикс "{qu}" успешно установлен!</b>')
 	await asyncio.sleep(1)
@@ -481,10 +485,9 @@ async def setprefix(client, message):
 
 @app.on_message(filters.command('gpt', prefixes=prefix))
 async def chatgpt(client, message):
-	try:
-		qu = " ".join(message.text.split()[1:])
-	except:
-		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Не верно введены аргументы!</b>')
+	qu = " ".join(message.text.split()[1:])
+	if qu == '':
+		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Запрос не может быть пустым!</b>')
 	
 	await message.edit_text(f'<emoji id=5253647886738007937>🤖</emoji> <b>ChatGPT генерирует ответ, ожидайте...</b>')
 	try:
@@ -506,10 +509,9 @@ async def leavejoin(client, message):
 
 @app.on_message(filters.command('shifr', prefixes=prefix))
 async def shifr(client, message):
-	try:
-		text = " ".join(message.text.split()[1:])
-	except:
-		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Не верно введены аргументы!</b>')
+	text = " ".join(message.text.split()[1:])
+	if text == '':
+		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Текст не может быть пустым!</b>')
 	
 	await message.edit_text(ui(text))
 
@@ -518,7 +520,8 @@ async def report(client, message):
 	r = message.reply_to_message.from_user
 	try:
 		spam = int(message.text.split()[1])
-		print(spam)
+		if spam <= 0:
+			return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Кол-во репортов не может быть отрицательным!</b>')
 	except Exception as e:
 		return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Не верно введены аргументы!</b>')
 		
@@ -672,13 +675,11 @@ async def ids_group(client, message):
 
 @app.on_message(filters.command('creategroup', prefixes=prefix))
 async def create_group(client, message):
-	try:
-		title = " ".join(message.text.split())
-	except:
-		await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Не верно введены аргументы!</b>')
+	title = " ".join(message.text.split())
+	t = title.replace(f'{prefix}creategroup',  '')
+	if t == '':
+		await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Название чата не может быть пустым</b>')
 		return
-	
-	t = title.replace(f'{prefix}creategroup ',  '')
 	
 	if len(t) >= 100:
 		await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>В названии чата не может быть более 100 символов!</b>')
@@ -704,10 +705,9 @@ async def clock(client, message):
 @app.on_message(filters.command('autoname', prefixes=prefix))
 async def clock(client, message):
     # Переводим текст команды в строку
-    try:
-    	n = " ".join(message.text.split())
-    except Exception as e:
-    	return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Ошибка: {e}</b>')
+    n = " ".join(message.text.split())
+    if n == '':
+    	return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Ник не может быть пустым!</b>')
     if '{time}' not in n:
     	return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>В введенном нике отсутсвует "{time}"</b>')
    
@@ -806,11 +806,11 @@ async def magiclove(client, message):
 
 @app.on_message(filters.command('voice', prefixes=prefix))
 async def voice(client, message):
-    await message.edit_text('<emoji id=5260652149469094137>🎙</emoji> <b>Распознаю...</b>')
     voice = message.reply_to_message.voice
     if not voice:
         await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>Команда должна быть ответом на голосовое сообщение!</b>')
         return
+    await message.edit_text('<emoji id=5260652149469094137>🎙</emoji> <b>Распознаю...</b>')
     file_id = voice.file_id
     try:
         voice_file = await client.download_media(file_id)
@@ -1013,7 +1013,7 @@ async def leave(client, message):
     try:
     	id_chat = message.text.split()[1]
     except:
-    	await message.edit_text(f"<emoji id=5237993272109967450>❌</emoji> Произошла ошибка: {e}")
+    	await message.edit_text(f"<emoji id=5237993272109967450>❌</emoji> <b>Вы не ввели аргументы!</b>")
     	return
 
     if isinstance(id_chat, int):
@@ -1024,18 +1024,18 @@ async def leave(client, message):
     		i = id_chat.replace("https://t.me/", '')
     		id = await get_chat_id(i)
     	except Exception as e:
-    		await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> Не удалось выйти с чата: {e}')
+    		await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Не удалось выйти с чата: {e}</b>')
     		return
     
     await app.leave_chat(id)
-    await message.edit_text(f'<emoji id=5474371208176737086>✉️</emoji> Вы вышли с чата {id_chat}!')
+    await message.edit_text(f'<emoji id=5474371208176737086>✉️</emoji> <b>Вы вышли с чата {id_chat}!</b>')
 
 @app.on_message(filters.command("join", prefixes=prefix) & filters.me)
 async def join(client, message):
     try:
     	id_chat = message.text.split()[1]
     except:
-    	await message.edit_text(f"<emoji id=5237993272109967450>❌</emoji> Произошла ошибка: {e}")
+    	await message.edit_text(f"<emoji id=5237993272109967450>❌</emoji> <b>Вы не ввели аргументы!</b>")
     	return
 
     if isinstance(id_chat, int):
@@ -1314,11 +1314,15 @@ async def ping(client, message):
 async def ping(client, message):
 	try:
 		count = int(message.text.split()[1])
+		if not count:
+			return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> Не верно введены аргументы!')
 		if message.reply_to_message:
 			text = message.reply_to_message.text
 		else:
 			text = " ".join(message.text.split()[2:])
-	except:
+			if text == '':
+				return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> Текст не может быть пустым!')
+	except Exception as e:
 		await message.edit_text(f"<emoji id=5237993272109967450>❌</emoji> Произошла ошибка: {e}")
 		return
 	chat_id = message.chat.id
