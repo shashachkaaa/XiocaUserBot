@@ -302,6 +302,7 @@ async def update(client, message):
 		await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления установлены. Через 5 секунд юзербот перезапустится для завершения обновления...</b>')
 		await asyncio.sleep(5)
 		m = await message.edit_text('<emoji id=5258420634785947640>🔄</emoji> <b>Перезагружаюсь...</b>')
+		restart()
 #		if m:
 #			cursor.execute(f'UPDATE settings SET last_time = "{time.time()}"')
 #			connect.commit()
