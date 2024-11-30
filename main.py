@@ -314,8 +314,7 @@ async def update(client, message):
 		return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
 	else:
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
-		vv = v.replace("'", '')
-		cursor.execute(f'UPDATE settings SET version = "{vv}"')
+		cursor.execute(f'UPDATE settings SET version = "{v}"')
 		connect.commit()
 		subprocess.run("rm -rf bull_text.py requirements.txt main.py", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/bull_text.py", shell=True, capture_output=True)
@@ -415,10 +414,11 @@ async def info(client, message):
 	with open("version.txt", "r") as file:
 			v = file.readline().strip()
 			v = v.replace('v = ', '')
+	vv = ver.replace("'", '')
 	if ver == v:
-		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {ver} актуальная'
+		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {vv} актуальная'
 	else:
-		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {ver} устаревшая. Введите <code>{prefix}update</code> для обновления.'
+		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {vv} устаревшая. Введите <code>{prefix}update</code> для обновления.'
 	
 	await client.send_animation(message.chat.id, animation="xioca.mp4", caption=f'''
 <emoji id=5372905603695910757>🌙</emoji> <b>Xioca
