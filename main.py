@@ -217,10 +217,16 @@ i            [
         )
 
 user_data = {}
+auto_data = {}
 
 class bulling:
 	def __init__(self):
 		self.id = []
+
+class auto:
+	def __init__(self):
+		self.id = []
+		self.name = 'none'
 
 def get_bulling(user_id):
     if user_id not in user_data:
@@ -230,6 +236,15 @@ def get_bulling(user_id):
 def delete_bulling(user_id):
     if user_id in user_data:
         del user_data[user_id]
+
+def get_auto(user_id):
+    if user_id not in auto_data:
+        auto_data[user_id] = auto()
+    return auto_data[user_id]
+
+def delete_auto(user_id):
+    if user_id in auto_data:
+        del auto_data[user_id]
 
 help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по юзерботу:
 
@@ -690,8 +705,12 @@ async def create_group(client, message):
 
 @app.on_message(filters.command('stopautoname', prefixes=prefix))
 async def clock(client, message):
-	name = cursor.execute(f'SELECT name from settings').fetchone()
-	name = str(name[0])
+#	name = cursor.execute(f'SELECT name from settings').fetchone()
+#	name = str(name[0])
+	user = await client.get_me()
+	user_id = user.id
+	bd = get_auto(user_id)
+	name = bd.name
 	await message.edit_text(f'<emoji id=5237907553152672597>✅</emoji> <b>Время в нике успешно остановлено!</b>')
 	n = name.replace(f'{prefix}autoname ', '')
 	nm = n.replace("{time}", '')
@@ -699,8 +718,9 @@ async def clock(client, message):
 		await app.update_profile(first_name=f"{nm}")
 	except:
 		await app.update_profile(first_name=f'Введите ник')
-	cursor.execute(f'UPDATE settings SET autoname = "off"')
-	connect.commit()
+	delete_auto(user_id)
+#	cursor.execute(f'UPDATE settings SET autoname = "off"')
+#	connect.commit()
 	
 @app.on_message(filters.command('autoname', prefixes=prefix))
 async def clock(client, message):
@@ -711,15 +731,22 @@ async def clock(client, message):
     if '{time}' not in n:
     	return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>В введенном нике отсутсвует "{time}"</b>')
    
-    type = cursor.execute('SELECT autoname FROM settings').fetchone()[0]
-    if type == 'on':
+#    type = cursor.execute('SELECT autoname FROM settings').fetchone()[0]
+    user = await client.get_me()
+    user_id = user.id
+    bd = get_auto(user_id)
+    ids = bd.id
+    if user_id in ids:
     	return await message.edit_text('<emoji id=5237993272109967450>❌</emoji> <b>У вас уже установлено время в нике!</b>')
     
     # Отправляем сообщение об успешной установке времени в ник
     await message.edit_text(f'<emoji id=5237907553152672597>✅</emoji> <b>Время в ник успешно установлено!</b>')
-    cursor.execute(f'UPDATE settings SET name = "{n}"')
-    cursor.execute(f'UPDATE settings SET autoname = "on"')
-    connect.commit()
+    bd.id.append(user_id)
+    bd.name = n
+    
+#    cursor.execute(f'UPDATE settings SET name = "{n}"')
+#    cursor.execute(f'UPDATE settings SET autoname = "on"')
+#    connect.commit()
 
     # Цикл для обновления ника с интервалом в 60 секунд
     while True:
@@ -727,7 +754,8 @@ async def clock(client, message):
         autoname_status = cursor.execute('SELECT autoname FROM settings').fetchone()[0]
         
         # Проверяем, включен ли autoname
-        if autoname_status == 'on':
+        
+        if user_id in ids:
             current_time = get_current_time()
             name = n.replace(f'{prefix}autoname ', '')
             name = name.replace("{time}", current_time)
