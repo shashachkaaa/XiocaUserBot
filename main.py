@@ -121,7 +121,7 @@ print(Fore.YELLOW + Style.BRIGHT + '''
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠙⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠿⠛⠉⠀⠀⠀⠀⠀⠀⠀⠀⠈⠂⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠛⠛⠛⠛⠛⠛⠛⠋⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀''')
 print(Fore.YELLOW + Style.BRIGHT + pyfiglet.figlet_format('xioca', font = 'starwars') + Fore.WHITE)
-print(Fore.YELLOW + Style.BRIGHT + '            XIOKA HAS STARTED' + Fore.WHITE)
+print(Fore.YELLOW + Style.BRIGHT + '            XIOCA HAS STARTED' + Fore.WHITE)
 
 async def get_user_id(username):
     try:
@@ -308,13 +308,14 @@ async def update(client, message):
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
 	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
 	with open("version.txt", "r") as file:
-			v = file.readline().strip()
-			v = v.replace('v = ', '')
+			ve = file.readline().strip()
+			v = ve.replace('v = ', '')
 	if ver == v:
 		return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
 	else:
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
-		cursor.execute(f'UPDATE settings SET version = "{v}"')
+		vv = v.replace("'", '')
+		cursor.execute(f'UPDATE settings SET version = "{vv}"')
 		connect.commit()
 		subprocess.run("rm -rf bull_text.py requirements.txt main.py", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/bull_text.py", shell=True, capture_output=True)
@@ -405,9 +406,6 @@ async def info(client, message):
 	try:
 		subprocess.run("rm -rf version.txt", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
-		with open("version.txt", "r") as file:
-			v = file.readline().strip()
-			v = v.replace('v = ', '')
 	except:
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
 		subprocess.run("pkg install wget", shell=True, capture_output=True)
@@ -417,7 +415,6 @@ async def info(client, message):
 	with open("version.txt", "r") as file:
 			v = file.readline().strip()
 			v = v.replace('v = ', '')
-	
 	if ver == v:
 		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {ver} актуальная'
 	else:
