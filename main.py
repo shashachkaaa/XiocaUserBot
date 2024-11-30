@@ -295,16 +295,21 @@ help_text = f"""<emoji id=5258503720928288433>ℹ️</emoji> Помощь по �
 async def update(client, message):
 	await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Проверка обновлений...</b>')
 	try:
-		subprocess.run("rm -rf version.py", shell=True, capture_output=True)
-		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
+		subprocess.run("rm -rf version.txt", shell=True, capture_output=True)
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
+		with open("version.txt", "r") as file:
+			v = file.readline().strip()
+			v = v.replace('v = ', '')
 	except:
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
 		subprocess.run("pkg install wget", shell=True, capture_output=True)
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Проверка обновлений...</b>')
-		subprocess.run("rm -rf version.py", shell=True, capture_output=True)
-		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
-	from version import v
+		subprocess.run("rm -rf version.txt", shell=True, capture_output=True)
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
 	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
+	with open("version.txt", "r") as file:
+			v = file.readline().strip()
+			v = v.replace('v = ', '')
 	if ver == v:
 		return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
 	else:
@@ -398,15 +403,20 @@ async def info(client, message):
 		platform_name = "<emoji id=5330115548900501467>🔑</emoji> Unknown"
 
 	try:
-		subprocess.run("rm -rf version.py", shell=True, capture_output=True)
-		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
+		subprocess.run("rm -rf version.txt", shell=True, capture_output=True)
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
+		with open("version.txt", "r") as file:
+			v = file.readline().strip()
+			v = v.replace('v = ', '')
 	except:
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
 		subprocess.run("pkg install wget", shell=True, capture_output=True)
-		subprocess.run("rm -rf version.py", shell=True, capture_output=True)
-		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.py", shell=True, capture_output=True)
+		subprocess.run("rm -rf version.txt", shell=True, capture_output=True)
+		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
 	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
-	from version import v
+	with open("version.txt", "r") as file:
+			v = file.readline().strip()
+			v = v.replace('v = ', '')
 	
 	if ver == v:
 		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {ver} актуальная'
