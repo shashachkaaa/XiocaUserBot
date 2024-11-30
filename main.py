@@ -189,7 +189,9 @@ def get_prefix():
 	try:
 		get_pref = cursor.execute(f'SELECT prefix from settings').fetchone()[0]
 	except:
-		from version import v
+		with open("version.txt", "r") as file:
+			ve = file.readline().strip()
+			v = ve.replace('v = ', '')
 		cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 0, 0, 0, v, 'off'))
 		connect.commit()
 	get_pref = cursor.execute(f'SELECT prefix from settings').fetchone()[0]
