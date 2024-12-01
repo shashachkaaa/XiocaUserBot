@@ -375,6 +375,8 @@ async def info(client, message):
 	       	platform_name = "<emoji id=5361541227604878624>🐧</emoji> Linux"
 	elif system == "Darwin":
 	 	platform_name = "<emoji id=5431376038628171216>💻</emoji> MacOS"
+	elif system == "FreeBSD":
+		platform_name = "<emoji id=5431376038628171216>💻</emoji> FreeBSD"
 	else:
 		platform_name = "<emoji id=5330115548900501467>🔑</emoji> Unknown"
 
