@@ -23,22 +23,7 @@ try:
 except Exception as e:
 	print(e)
 	pip.main(['install', '-r', 'requirements.txt'])
-	if os.name == "nt":
-	    os.execvp(
-	        "python",
-	        [
-	            "python",
-	            "main.py",
-	        ],
-	     )
-	else:
-	    os.execvp(
-	        "python3",
-	        [
-	            "python3",
-	            "main.py",
-	        ],
-	     )
+	os.execvp(sys.executable, [sys.executable, "main.py"])
 
 system = platform.system()
 start_time = time.time()
@@ -89,7 +74,10 @@ else:
     # Подтверждение номера телефона
     client.sign_in(phone_number, input_code)
 
-subprocess.call(['apt', 'install', 'ffmpeg', '-y'])
+try:
+	subprocess.call(['apt', 'install', 'ffmpeg', '-y'])
+except:
+	pass
 
 if os.name == "nt":
         	os.system("cls")
@@ -198,25 +186,9 @@ def get_prefix():
 	return get_pref
 	
 prefix = get_prefix()
-print(prefix)
 
 def restart():
-    if os.name == "nt":
-        os.execvp(
-            "python",
-i            [
-                "python",
-                "main.py",
-            ],
-        )
-    else:
-        os.execvp(
-            "python3",
-            [
-                "python3",
-                "main.py",
-            ],
-        )
+    os.execvp(sys.executable, [sys.executable, "main.py"])
 
 user_data = {}
 auto_data = {}
