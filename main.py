@@ -288,7 +288,7 @@ async def update(client, message):
 		return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
 	else:
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
-		cursor.execute(f'UPDATE settings SET version = "{v}"')
+		cursor.execute(f'UPDATE settings SET version = {v}')
 		connect.commit()
 		subprocess.run("rm -rf bull_text.py requirements.txt main.py", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/bull_text.py", shell=True, capture_output=True)
@@ -297,7 +297,9 @@ async def update(client, message):
 		pip.main(['install', '-r', 'requirements.txt'])
 		await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления установлены. Через 5 секунд юзербот перезапустится для завершения обновления...</b>')
 		await asyncio.sleep(5)
-		m = await message.edit_text('<emoji id=5258420634785947640>🔄</emoji> <b>Перезагружаюсь...</b>')
+		await message.edit_text('<emoji id=5258420634785947640>🔄</emoji> <b>Перезагружаюсь...</b>')
+		await asyncio.sleep(2)
+		await client.delete_messages(message.chat.id, message.id)
 		restart()
 #		if m:
 #			cursor.execute(f'UPDATE settings SET last_time = "{time.time()}"')
@@ -475,6 +477,8 @@ async def setprefix(client, message):
 	await message.edit_text(f'<emoji id=5258420634785947640>🔄</emoji> <code>Перезапускаюсь для установки префикса...</code>')
 	cursor.execute(f'UPDATE settings SET prefix = "{qu}"')
 	connect.commit()
+	await asyncio.sleep(2)
+	await client.delete_messages(message.chat.id, message.id)
 	restart()
 
 @app.on_message(filters.command('gpt', prefixes=prefix))
@@ -910,6 +914,8 @@ async def terminal(client, message):
 @app.on_message(filters.command('restart', prefixes=prefix) & filters.me)
 async def res(client, message):
     await message.edit_text(f'<emoji id=5258420634785947640>🔄</emoji> <code>Перезапускаюсь...</code>')
+    await asyncio.sleep(2)
+    await client.delete_messages(message.chat.id, message.id)
     restart()
 
 @app.on_message(filters.command(["eval", 'e'], prefixes=prefix) & filters.me)
