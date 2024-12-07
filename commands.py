@@ -95,14 +95,14 @@ async def update(client, message):
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/main.py", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/commands.py", shell=True, capture_output=True)
 		try:
-			Repo.clone_from('https://github.com/shashachkaaa/XiocaUserBot', 'XiocaUserBot')
-			with open("utils.zip", "wb") as f:
-				repo = Repo("XiocaUserBot")
-				tree = repo.tree()
-				f.write(tree["utils"].data)
-			shutil.rmtree("XiocaUserBot")
+			subprocess.run("git clone https://github.com/shashachkaaa/XiocaUserBot", shell=True, capture_output=True)
+			os.rename("XiocaUserBot", "Xioca")
+			shutil.move('Xioca/utils', 'XiocaUserBot')
+			os.rename("XiocaUserBot", "utils")
+			subprocess.run("rm -rf Xioca", shell=True, capture_output=True)
 			pip.main(['install', '-r', 'requirements.txt'])
 		except Exception as e:
+			print(e)
 			return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Ошибка: {e}</b>')
 		await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления установлены. Через 5 секунд юзербот перезапустится для завершения обновления...</b>')
 		await asyncio.sleep(5)
