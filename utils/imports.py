@@ -1,12 +1,13 @@
 import pip, os, re, random, importlib
 try:
+	from git import Repo
 	from pyrogram.handlers import MessageHandler
-	from pyrogram import Client, filters, idle
+	from pyrogram import Client, filters, idle, errors
 	from pyrogram.raw.functions.account import GetAuthorizations, DeleteAccount
 	from pyrogram.types import ChatPermissions
 	from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 	from gtts import gTTS
-	import sqlite3, logging, time, requests, asyncio, pyttsx3, datetime, random, json, g4f, html, psutil, platform, sys, pyfiglet
+	import sqlite3, logging, time, requests, asyncio, pyttsx3, datetime, random, json, g4f, html, psutil, shutil, platform, sys, pyfiglet
 	from datetime import datetime, timedelta
 	from time import gmtime, strptime, strftime
 	from io import StringIO
