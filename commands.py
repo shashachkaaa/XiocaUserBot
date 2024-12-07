@@ -91,12 +91,19 @@ async def update(client, message):
 		cursor.execute(f'UPDATE settings SET version = "{v}"')
 		connect.commit()
 		subprocess.run("rm -rf bull_text.py requirements.txt main.py utils commands.py", shell=True, capture_output=True)
-		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/bull_text.py", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/requirements.txt", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/main.py", shell=True, capture_output=True)
-		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/utils", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/commands.py", shell=True, capture_output=True)
-		pip.main(['install', '-r', 'requirements.txt'])
+		try:
+			Repo.clone_from('https://github.com/shashachkaaa/XiocaUserBot', 'XiocaUserBot')
+			with open("utils.zip", "wb") as f:
+				repo = Repo("XiocaUserBot")
+				tree = repo.tree()
+				f.write(tree["utils"].data)
+			shutil.rmtree("XiocaUserBot")
+			pip.main(['install', '-r', 'requirements.txt'])
+		except Exception as e:
+			return await message.edit_text(f'<emoji id=5237993272109967450>❌</emoji> <b>Ошибка: {e}</b>')
 		await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления установлены. Через 5 секунд юзербот перезапустится для завершения обновления...</b>')
 		await asyncio.sleep(5)
 		await message.edit_text('<emoji id=5258420634785947640>🔄</emoji> <b>Перезагружаюсь...</b>')
