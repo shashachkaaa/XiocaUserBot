@@ -14,8 +14,8 @@ try:
         api_hash = str(api_hash[0])
         
 except FileNotFoundError:
-    api_id = int(input("Введите ваш API ID: "))
-    api_hash = input("Введите ваш API HASH: ")
+    api_id = int(input(fade.fire("Введите ваш API ID: ")))
+    api_hash = input(fade.fire("Введите ваш API HASH: "))
 
     with open("user_data.txt", "w") as file:
         file.write(f"api_id={api_id}\napi_hash='{api_hash}'")
@@ -32,13 +32,14 @@ async def main():
         await app.start()
     except sqlite3.OperationalError as e:
         if str(e) == "database is locked" and os.name == "posix":
-            logging.warning("Файл с сессией заблокирован!")
+            logging.warning(fade.fire("Файл с сессией заблокирован!"))
             subprocess.run(['rm', '-rf', 'session.session', 'user_data.txt'])
             restart()
         raise
     except (errors.NotAcceptable, errors.Unauthorized) as e:
         logging.error(f"{e.__class__.__name__}: {e}")
         os.rename("session.session", "session.session-old")
+        os.rename("user_data.txt", "user_data.txt-old")
         restart()
         
     await idle()
@@ -47,7 +48,7 @@ async def main():
 authed = client.authorize()
 
 if authed:
-    print("Пользователь авторизован!")
+    print(fade.fire("Пользователь авторизован!"))
 else:
     phone_number = input(Fore.YELLOW + Style.BRIGHT + "Введите ваш номер телефона: ")
     code = client.send_code(phone_number)
@@ -65,9 +66,8 @@ if os.name == "nt":
         	os.system("cls")
 else:
         	os.system("clear")
-print(Fore.YELLOW + Style.BRIGHT + start_art)
-print(Fore.YELLOW + Style.BRIGHT + pyfiglet.figlet_format('xioca', font = 'starwars') + Fore.WHITE)
-print(Fore.YELLOW + Style.BRIGHT + '            XIOCA HAS STARTED' + Fore.WHITE)
+start_t = start_art + pyfiglet.figlet_format('xioca', font = 'starwars') +'\n            XIOCA HAS STARTED' + Fore.WHITE
+print(fade.fire(start_t))
 
 path = "commands"
 module = importlib.import_module(path)
