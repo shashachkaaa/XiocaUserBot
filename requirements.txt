@@ -9,3 +9,4 @@ unidecode
 colorama
 pyfiglet
 pytz
+fade
