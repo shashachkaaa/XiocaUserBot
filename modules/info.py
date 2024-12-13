@@ -41,7 +41,7 @@ async def info(client, message):
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
 	except:
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
-		subprocess.run("pkg install wget", shell=True, capture_output=True)
+		subprocess.run("pkg install wget -y", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt")
 	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
 	with open("version.txt", "r") as file:
