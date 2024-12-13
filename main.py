@@ -59,6 +59,15 @@ async def main():
     if failed_modules:
         logging.warning(f"Не удалось загрузить {failed_modules} модулей")
     
+    f = cursor.execute(f"SELECT prefix from settings")
+    print(f)
+    if cursor.fetchone() is None:
+    	with open("version.txt", "r") as file:
+    		v = file.readline().strip()
+    		v = v.replace('v = ', '')
+    	cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 'off', 0, 'off', v, 'off'))
+    	connect.commit()
+    
     if info := db.get("core.updater", "restart_info"):
     	last_time = info["last_time"]
     	end_time = time.time() - last_time
