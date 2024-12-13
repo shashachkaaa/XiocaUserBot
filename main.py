@@ -1,7 +1,7 @@
 from utils.imports import *
 from utils.func import *
 from utils.texts import *
-from commands import *
+from utils.misc import *
 
 try:
     with open("user_data.txt", "r") as file:
@@ -41,11 +41,48 @@ async def main():
         os.rename("session.session", "session.session-old")
         os.rename("user_data.txt", "user_data.txt-old")
         restart()
-        
+    
+    success_modules = 0
+    failed_modules = 0
+    
+    for path in Path("modules").rglob("*.py"):
+        try:
+        	await load_module(path.stem, app, core="custom_modules" not in path.parent.parts, message = None)
+        except:
+        	logging.warning(f"Не удалось загрузить модуль {path.stem}", exc_info=True)
+        	failed_modules += 1
+        else:
+        	success_modules += 1
+    
+    logging.info(f"Импортировано {success_modules} модулей")
+    
+    if failed_modules:
+        logging.warning(f"Не удалось загрузить {failed_modules} модулей")
+    
+    if info := db.get("core.updater", "restart_info"):
+    	last_time = info["last_time"]
+    	end_time = time.time() - last_time
+    	hours, rem = divmod(end_time, 3600)
+    	minutes, seconds = divmod(rem, 60)
+    	
+    	text = {
+    		"restart": f"<b><emoji id=5237907553152672597>✅</emoji> Xioca успешно перезагружена за <code>{int(seconds):02d}</code> секунд!</b>",
+    		"update": f"<b><emoji id=5237907553152672597>✅</emoji> Обновление успешно завершено! Xioca перезагружена за <code>{int(seconds):02d}</code> секунд!</b>",
+    		"setpref": f"<b><emoji id=5237907553152672597>✅</emoji> Префикс успешно установлен! Xioca перезагружена за <code>{int(seconds):02d}</code> секунд!</b>"
+    	}[info["type"]]
+    	try:
+    		await app.edit_message_text(info["chat_id"], info["message_id"], text)
+    	except:
+    		pass
+    	db.remove("core.updater", "restart_info")
+    
     await idle()
     await app.stop()
-
-authed = client.authorize()
+    
+try:
+	authed = client.authorize()
+except:
+	pass
 
 if authed:
     print(fade.fire("Пользователь авторизован!"))
@@ -68,14 +105,6 @@ else:
         	os.system("clear")
 start_t = start_art + pyfiglet.figlet_format('xioca', font = 'starwars') +'\n            XIOCA HAS STARTED' + Fore.WHITE
 print(fade.fire(start_t))
-
-path = "commands"
-module = importlib.import_module(path)
-
-for name, obj in vars(module).items():
-    if type(getattr(obj, "handlers", [])) == list:
-        for handler, group in getattr(obj, "handlers", []):
-            client.add_handler(handler, group)
 
 if __name__ == "__main__":
 	app.run(main())
