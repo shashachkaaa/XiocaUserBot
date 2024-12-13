@@ -44,7 +44,10 @@ async def info(client, message):
 		subprocess.run("pkg install wget", shell=True, capture_output=True)
 		subprocess.run("rm -rf version.txt", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
-	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
+	try:
+		ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
+	except:
+		cursor.execute(f'UPDATE settings SET version = "1.0.0"')
 	with open("version.txt", "r") as file:
 			v = file.readline().strip()
 			v = v.replace('v = ', '')
