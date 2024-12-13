@@ -60,7 +60,6 @@ async def main():
         logging.warning(f"Не удалось загрузить {failed_modules} модулей")
     
     f = cursor.execute(f"SELECT prefix from settings")
-    print(f)
     if cursor.fetchone() is None:
     	with open("version.txt", "r") as file:
     		v = file.readline().strip()
