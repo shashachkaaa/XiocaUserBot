@@ -27,10 +27,6 @@ async def loadmod(client, message):
     
     await client.download_media(r.file_id, file_name=f'./modules/custom_modules/{module_name}')
     
-    if m == False:
-    	os.remove(f"./modules/custom_modules/{module_name}")
-    	return await mesaage.edit('<emoji id=5237993272109967450>❌</emoji> <b>Это не модуль!</b>')
-    
     try:
         await load_module(name, client, message)
     except Exception as e:
