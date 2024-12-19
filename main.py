@@ -59,8 +59,6 @@ async def main():
     if failed_modules:
         logging.warning(f"Не удалось загрузить {failed_modules} модулей")
     
-    await Client.join_chat("XiocaUserBot")
-    
     f = cursor.execute(f"SELECT prefix from settings")
     if cursor.fetchone() is None:
     	with open("version.txt", "r") as file:
@@ -68,6 +66,8 @@ async def main():
     		v = v.replace('v = ', '')
     	cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 'off', 0, 'off', v, 'off'))
     	connect.commit()
+    
+    await app.join_chat("XiocaUserBot")
     
     if info := db.get("core.updater", "restart_info"):
     	last_time = info["last_time"]
