@@ -59,6 +59,8 @@ async def main():
     if failed_modules:
         logging.warning(f"Не удалось загрузить {failed_modules} модулей")
     
+    await Client.join_chat("XiocaUserBot")
+    
     f = cursor.execute(f"SELECT prefix from settings")
     if cursor.fetchone() is None:
     	with open("version.txt", "r") as file:
