@@ -4,6 +4,16 @@ from utils.misc import *
 
 forbidden_methods = ['input', 'help', 'dir', 'eval', 'exec', 'os.system', 'os.popen', 'subprocess.call', 'requests.post', 'requests.get']
 
+def get_version():
+	with open("version.txt", "r") as file:
+			v = file.readline().strip()
+			v = v.replace('v = ', '')
+	vv = v.replace("'", "")
+	return vv
+
+def escape_html(text: str, /) -> str:
+    return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
 def format_exc(e: Exception, suffix="") -> str:
     traceback.print_exc()
     if isinstance(e, errors.RPCError):
