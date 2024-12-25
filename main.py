@@ -20,7 +20,14 @@ except FileNotFoundError:
     with open("user_data.txt", "w") as file:
         file.write(f"api_id={api_id}\napi_hash='{api_hash}'")
 
-client = Client("session", api_id, api_hash)
+client = Client(
+	"session",
+	api_id, 
+	api_hash,
+	app_version = get_version(),
+	device_model = 'Xioca'
+)
+
 app = client
 logging.basicConfig(level=logging.INFO)
 
@@ -56,8 +63,11 @@ async def main():
     
     logging.info(f"Импортировано {success_modules} модулей")
     
+    tload = f'<emoji id=5237907553152672597>✅</emoji> Имортировано {success_modules} модулей'
+    
     if failed_modules:
-        logging.warning(f"Не удалось загрузить {failed_modules} модулей")
+        logging.warning(f"Не удалось импортировать {failed_modules} модулей")
+        tload += f'\n<emoji id=5237993272109967450>❌</emoji> Неудалось имортировать {failed_modules} модулей'
     
     f = cursor.execute(f"SELECT prefix from settings")
     if cursor.fetchone() is None:
@@ -66,8 +76,33 @@ async def main():
     		v = v.replace('v = ', '')
     	cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 'off', 0, 'off', v, 'off'))
     	connect.commit()
+    	
+    chat_list = ["xiocauserbot", 'xiocamods', 'xiocachat']
     
-    await app.join_chat("XiocaUserBot")
+    for ch in chat_list:
+    	await app.join_chat(ch)
+    
+    msg = db.get('start', 'msg', 0)
+    try:
+    	await app.delete_messages("me", msg)
+    except:
+    	pass
+    	
+    ver = get_version()
+    vv = ver.replace("'", '')
+    if ver == ver:
+    	tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {vv} актуальная'
+    else:
+    	tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {vv} устаревшая. Введите <code>{prefix}update</code> для обновления.'
+    
+    m = await app.send_message(chat_id="me", text=f'''
+<emoji id=5372905603695910757>🌙</emoji> <b>Xioca успешно запущена
+{tv}
+{tload}
+<emoji id=5213363464323479192>🔊</emoji> Основной канал:</b> https://t.me/XiocaUserbot
+<emoji id=5875206779196935950>📁</emoji> <b>Модули:</b> https://t.me/xiocamods
+<emoji id=5465132703458270101>🗯</emoji> <b>Чат:</b> https://t.me/XiocaChat''')
+    db.set('start', 'msg', m.id)
     
     if info := db.get("core.updater", "restart_info"):
     	last_time = info["last_time"]
@@ -76,9 +111,9 @@ async def main():
     	minutes, seconds = divmod(rem, 60)
     	
     	text = {
-    		"restart": f"<b><emoji id=5237907553152672597>✅</emoji> Xioca успешно перезагружена за <code>{int(seconds):02d}</code> секунд!</b>",
-    		"update": f"<b><emoji id=5237907553152672597>✅</emoji> Обновление успешно завершено! Xioca перезагружена за <code>{int(seconds):02d}</code> секунд!</b>",
-    		"setpref": f"<b><emoji id=5237907553152672597>✅</emoji> Префикс успешно установлен! Xioca перезагружена за <code>{int(seconds):02d}</code> секунд!</b>"
+    		"restart": f"<b><emoji id=5237907553152672597>✅</emoji> Xioca успешно перезагружена за <code>{int(seconds):2d}</code> секунд!</b>",
+    		"update": f"<b><emoji id=5237907553152672597>✅</emoji> Обновление успешно завершено! Xioca перезагружена за <code>{int(seconds):2d}</code> секунд!</b>",
+    		"setpref": f"<b><emoji id=5237907553152672597>✅</emoji> Префикс успешно установлен! Xioca перезагружена за <code>{int(seconds):2d}</code> секунд!</b>"
     	}[info["type"]]
     	try:
     		await app.edit_message_text(info["chat_id"], info["message_id"], text)
@@ -113,6 +148,7 @@ if os.name == "nt":
         	os.system("cls")
 else:
         	os.system("clear")
+        	
 start_t = start_art + pyfiglet.figlet_format('xioca', font = 'starwars') +'\n            XIOCA HAS STARTED' + Fore.WHITE
 print(fade.fire(start_t))
 
