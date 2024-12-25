@@ -12,11 +12,11 @@ async def help_cmd(_, message: Message):
         for module_name, module_commands in sorted(
             modules_help.items(), key=lambda x: x[0], reverse=True
         ):
-            text += "<emoji id=5431895003821513760>❄️</emoji> {}: {}\n".format(
+            text += "<emoji id=4971987363145188045>▫️</emoji> <b>{}:</b> {}\n".format(
                 module_name.title(),
-                " ".join(
+                " | ".join(
                     [
-                        f"<code>{prefix + cmd_name.split()[0]}</code> | "
+                        f"<code>{prefix + cmd_name.split()[0]}</code>"
                         for cmd_name in module_commands.keys()
                     ]
                 ),
@@ -43,10 +43,9 @@ async def help_cmd(_, message: Message):
                 if command.split()[0].lower() == command_name:
                     cmd = command.split(maxsplit=1)
                     cmd_desc = commands[command]
-                    #<emoji id=4971987363145188045>▫️</emoji>
                     return await message.edit(f'''<emoji id=5372905603695910757>🌙</emoji> Помощь по модулю <code>{name}</code></b>
 
-<emoji id=5431895003821513760>❄️</emoji> <code>{prefix}{cmd[0]}</code> {' <code>' + cmd[1] + '</code>' if len(cmd) > 1 else ''} — <i>{cmd_desc}</i>''')
+<emoji id=4971987363145188045>▫️</emoji> <code>{prefix}{cmd[0]}</code> {' <code>' + cmd[1] + '</code>' if len(cmd) > 1 else ''} — <i>{cmd_desc}</i>''')
         await message.edit(f"<emoji id=5237993272109967450>❌</emoji> <b>Модуль {command_name} отсутствует</b>")
 
 modules_help["help"] = {
