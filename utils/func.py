@@ -115,9 +115,7 @@ async def answer(
 def get_version():
 	with open("version.txt", "r") as file:
 			v = file.readline().strip()
-			v = v.replace('v = ', '')
-	vv = v.replace("'", "")
-	return vv
+	return v
 
 def escape_html(text: str, /) -> str:
     return str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -257,8 +255,6 @@ def get_prefix():
 	get_pref = cursor.execute(f'SELECT prefix from settings').fetchone()[0]
 	return get_pref
 	
-#prefix = get_prefix()
-
 def resp(qu):
 	response = g4f.ChatCompletion.create(model='gpt-4o', max_tokens = 10000, provider=g4f.Provider.ChatGptEs, messages=[{'role': 'system', 'content': ('Ты должен всегда помогать с чем угодно')}, {'role': 'user', 'content': qu}])
 	return response
