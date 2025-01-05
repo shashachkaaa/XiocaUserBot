@@ -61,7 +61,9 @@ async def main():
     		v = v.replace('v = ', '')
     	cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 'off', 0, 'off', v, 'off'))
     	connect.commit()
-    	
+    
+    me = await app.get_me()
+    meid = me.id
     list = []
     if not db.exists("core.main", "allow"):
     	db.set("core.main", "allow", 0)
