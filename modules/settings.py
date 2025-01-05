@@ -2,6 +2,17 @@ from utils.imports import *
 from utils.func import *
 from utils.misc import *
 
+@Client.on_message(filters.command('ownerlist', prefixes=prefix) & filters.users(allowed))
+async def ownerlist(client, message):
+	text = f'<emoji id=5778423822940114949>🛡</emoji> <b>Список пользователей, имеющих доступ к юзерботу:\n\n</b>'
+	
+	allo = db.get("core.main", "allow")
+	num = 0
+	for i in allo:
+		num += 1
+		text += f'<emoji id=4971987363145188045>▫️</emoji> <b><a href="tg://openmessage?user_id={i}">{num} Юзер</a></b> (<code>{i}</code>)\n'
+	await answer(message, text)
+		
 @Client.on_message(filters.command('owneradd', prefixes=prefix) & filters.me)
 async def owneradd(client, message):
 	try:
@@ -129,6 +140,7 @@ async def setprefix(client, message):
 modules_help["settings"] = {
 	"owneradd [ответ]": "Выдать доступ к юзерботу",
 	"ownerrm [ответ]": "Отнять доступ к юзерботу",
+	"ownerlist": "Получить список пользователей, имеющих доступ к юзерботу",
 	"setprefix [префикс]": "Установить префикс команд",
 	"setinfo [ответ/off]": "Установить фото, GIF или видео на инфо"
 }
