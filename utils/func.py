@@ -4,6 +4,114 @@ from utils.misc import *
 
 forbidden_methods = ['input', 'help', 'dir', 'eval', 'exec', 'os.system', 'os.popen', 'subprocess.call', 'requests.post', 'requests.get']
 
+async def answer(
+    message: Union[Message, List[Message]],
+    response: Union[str, Any],
+    chat_id: Union[str, int] = None,
+    document: bool = False,
+    photo: bool = False,
+    animation: bool = False,
+    video: bool = False,
+    caption: str = None,
+    disable_web_page_preview=False,
+    **kwargs
+) -> List[Message]:
+    """В основном это обычный message.edit, но:
+        - Если содержание сообщения будет больше лимита (4096 символов),
+            то отправится несколько разделённых сообщений
+        - Работает message.reply, если команду вызвал не владелец аккаунта
+
+    Параметры:
+        message (``pyrogram.types.Message`` | ``typing.List[pyrogram.types.Message]``):
+            Сообщение
+
+        response (``str`` | ``typing.Any``):
+            Текст или объект которое нужно отправить
+
+        chat_id (``str`` | ``int``, optional):
+            Чат, в который нужно отправить сообщение
+
+        document/photo (``bool``, optional):
+            Если ``True``, сообщение будет отправлено как документ/фото или по ссылке
+
+        kwargs (``dict``, optional):
+            Параметры отправки сообщения
+    """
+    messages: List[Message] = []
+
+    if isinstance(message, list):
+        message = message[0]
+
+    if isinstance(response, str) and all(not arg for arg in [document, photo, animation, video]):
+        outputs = [
+            response[i: i + 4096]
+            for i in range(0, len(response), 4096)
+        ]
+
+        if chat_id:
+            messages.append(
+                await message._client.send_message(
+                    chat_id, outputs[0], **kwargs)
+            )
+        else:
+            messages.append(
+                await (
+                    message.edit if message.outgoing
+                    else message.reply
+                )(outputs[0], **kwargs)
+            )
+
+        for output in outputs[1:]:
+            messages.append(
+                await messages[0].reply(output, **kwargs)
+            )
+
+    elif document:
+        if chat_id:
+            messages.append(
+                await message._client.send_document(
+                    chat_id, response, caption=caption, **kwargs)
+            )
+        else:
+            messages.append(
+                await message.reply_document(response, caption=caption, **kwargs)
+            )
+
+    elif photo:
+        if chat_id:
+            messages.append(
+                await message._client.send_photo(
+                    chat_id, response, caption=caption, **kwargs)
+            )
+        else:
+            messages.append(
+                await message.reply_photo(response, caption=caption, **kwargs)
+            )
+
+    elif animation:
+        if chat_id:
+            messages.append(
+                await message._client.send_animation(
+                    chat_id, response, caption=caption, **kwargs)
+            )
+        else:
+            messages.append(
+                await message.reply_animation(response, caption=caption, **kwargs)
+            )
+
+    elif video:
+        if chat_id:
+            messages.append(
+                await message._client.send_video(
+                    chat_id, response, caption=caption, **kwargs)
+            )
+        else:
+            messages.append(
+                await message.reply_video(response, caption=caption, **kwargs)
+            )
+
+    return messages
+
 def get_version():
 	with open("version.txt", "r") as file:
 			v = file.readline().strip()
@@ -34,11 +142,10 @@ def module_help(module_name: str, full=True):
         if full
         else "<b><emoji id=5226512880362332956>📖</emoji> Команды:</b>\n"
     )
-    #<emoji id=4971987363145188045>▫️</emoji>
     for command, desc in commands.items():
         cmd = command.split(maxsplit=1)
         args = " <code>" + cmd[1] + "</code>" if len(cmd) > 1 else ""
-        help_text += f"<emoji id=5431895003821513760>❄️</emoji> <code>{prefix}{cmd[0]}</code> {args} — <i>{desc}</i>\n"
+        help_text += f"<emoji id=4971987363145188045>▫️</emoji> <code>{prefix}{cmd[0]}</code> {args} — <i>{desc}</i>\n"
 
     return help_text
 
@@ -66,7 +173,7 @@ async def unload_module(module_name: str, client: Client) -> bool:
 
     return True
 
-async def load_module(module_name: str, client: Client, message: types.Message, core=False) -> ModuleType:
+async def load_module(module_name: str, client: Client, message: Message, core=False) -> ModuleType:
     if module_name in modules_help and not core:
         await unload_module(module_name, client)
 
@@ -81,18 +188,16 @@ async def load_module(module_name: str, client: Client, message: types.Message, 
 
     try:
         module = importlib.import_module(path)
-    except ImportError as e:
-        	
+    except:
+
         if core:
             raise
 
         if not packages:
             raise
-
-        try:
-        	await message.edit_text(f"<emoji id=5370896319210595146>🤔</emoji> <b>Устанавливаю зависимости: {' '.join(packages)}</b>")
-        except Exception as e:
-            print(e)
+            
+        if message:
+            await message.edit_text(f"<emoji id=5370896319210595146>🤔</emoji> <b>Устанавливаю зависимости: {' '.join(packages)}</b>")
             
         proc = await asyncio.create_subprocess_exec(
             sys.executable,
@@ -176,12 +281,6 @@ async def get_chat_id(username):
     except Exception as e:
         print("Ошибка:", e)
         return None
-
-
-def get_current_time():
-    tz_msk = pytz.timezone('Europe/Moscow') 
-    current_time = datetime.now(tz_msk)
-    return current_time.strftime("%H:%M")
 
 def get_report_reason(text):
     if text == "Report for child abuse.":

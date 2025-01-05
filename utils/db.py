@@ -37,6 +37,10 @@ class Database:
     def get_collection(self, module: str) -> dict:
         """Get database for selected module"""
         raise NotImplementedError
+    
+    def exists(self, module: str, variable: str) -> bool:
+    	"""Check if a key exists in the database"""
+    	raise NotImplementedError
 
     def close(self):
         """Close the database"""
@@ -129,6 +133,12 @@ class SqliteDatabase(Database):
             collection[row["var"]] = self._parse_row(row)
 
         return collection
+    
+    def exists(self, module: str, variable: str) -> bool:
+    	sql = f"SELECT COUNT(*) FROM '{module}' WHERE var=:var"
+    	cur = self._execute(module, sql, {"var": variable})
+    	
+    	return cur.fetchone()[0] > 0
 
     def close(self):
         self._conn.commit()
