@@ -10,7 +10,6 @@ async def update(client, message):
     subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
     with open("version.txt", "r") as file:
       v = file.readline().strip()
-      v = v.replace('v = ', '')
   except:
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
     subprocess.run("pkg install wget -y", shell=True, capture_output=True)
@@ -20,7 +19,6 @@ async def update(client, message):
   ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
   with open("version.txt", "r") as file:
     ve = file.readline().strip()
-    v = ve.replace('v = ', '')
   
   if ver == v:
     return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
