@@ -13,7 +13,7 @@ async def update(client, message):
       v = v.replace('v = ', '')
   except:
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
-    subprocess.run("pkg install wget", shell=True, capture_output=True)
+    subprocess.run("pkg install wget -y", shell=True, capture_output=True)
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Проверка обновлений...</b>')
     subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
 
