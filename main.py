@@ -58,7 +58,6 @@ async def main():
     if cursor.fetchone() is None:
     	with open("version.txt", "r") as file:
     		v = file.readline().strip()
-    		v = v.replace('v = ', '')
     	cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 'off', 0, 'off', v, 'off'))
     	connect.commit()
     
@@ -79,11 +78,10 @@ async def main():
     	await app.join_chat(ch)
     	
     ver = get_version()
-    vv = ver.replace("'", '')
     if ver == ver:
-    	tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {vv} актуальная'
+    	tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {v} актуальная'
     else:
-    	tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {vv} устаревшая. Введите <code>{prefix}update</code> для обновления.'
+    	tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {v} устаревшая. Введите <code>{prefix}update</code> для обновления.'
     
     if info := db.get("core.updater", "restart_info"):
     	last_time = info["last_time"]
