@@ -20,11 +20,11 @@ async def update(client, message):
   with open("version.txt", "r") as file:
     ve = file.readline().strip()
   
-  if ver == v:
+  if ver == ve:
     return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
   else:
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
-    cursor.execute(f'UPDATE settings SET version = "{v}"')
+    cursor.execute(f'UPDATE settings SET version = "{ve}"')
     connect.commit()
     subprocess.run(['git', 'pull'])
     pip.main(['install', '-r', 'requirements.txt'])
