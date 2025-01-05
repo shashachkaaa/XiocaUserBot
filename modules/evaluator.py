@@ -2,34 +2,38 @@ from utils.imports import *
 from utils.func import *
 from utils.misc import *
 
-@Client.on_message(filters.command(["eval", 'e'], prefixes=prefix) & filters.me)
-async def ev(client, message):
-    	code = " ".join(message.text.split()[1:])
+import traceback
+
+meval = import_lib('meval')
+from meval import meval
+
+def getattrs(app: Client, message: types.Message):
+        return {
+            "message": message,
+            "chat": message.chat,
+            "user": message.from_user,
+            "r": message.reply_to_message,
+            "reply": message.reply_to_message,
+            "ruser": getattr(message.reply_to_message, "from_user", None)
+        }
+
+@Client.on_message(filters.command(["eval", 'e'], prefixes=prefix) & filters.user(allowed))
+async def ev(client, message: Message):
+    	c = message.text
+    	cod = c.replace(f"{prefix}eval ", "")
+    	code = cod.replace(f"{prefix}e ", "")
     	try:
-    	   result = eval(code)
-    	   try:
-    	   	return await message.edit_text(f'''<emoji id=5339181821135431228>💻</emoji> <b>Код:</b>
-```python
-{code}```
+    	   result = await meval(code, globals(), **getattrs(client, message))
+    	except Exception as ex:
+    		return await answer(message, format_exc(ex))
+    	
+    	return await answer(message, f'''<emoji id=5339181821135431228>💻</emoji> <b>Код:</b>
+<code>{code}</code>
 
 <emoji id=5175061663237276437>🐍</emoji> <b>Вывод:</b>
-```python
-{result}```''')
-    	   except:
-    	   	with open('eval_output.txt', 'w') as f:
-    	   		f.write(f'''💻 Код:
-{code}
-
-🐍 Вывод:
-{result}''')
-    	   	await message.delete()
-    	   	await client.send_document(message.chat.id, document='eval_output.txt', caption='<emoji id=5175061663237276437>🐍</emoji> <b>Вывод команды слижком большой и был преобразован в файл...</b>')
-    	   	os.remove('eval_output.txt')
-    	   	return
-    	except Exception as ex:
-    		return await message.edit_text(format_exc(ex))
+<code>{html.escape(str(result))}</code>''')
+    	
 
 modules_help['evaluator'] = {
-	"eval [код]": "Интерпретатор python",
-	"e [код]": "Интерпретатор python"
+	"eval/e [код]": "Интерпретатор python"
 }

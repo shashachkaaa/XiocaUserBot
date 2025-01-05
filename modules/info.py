@@ -2,9 +2,9 @@ from utils.imports import *
 from utils.func import *
 from utils.misc import *
 
-@Client.on_message(filters.command('info', prefixes=prefix) & filters.me)
+@Client.on_message(filters.command('info', prefixes=prefix) & filters.user(allowed))
 async def info(client, message):
-	m = await message.edit_text('<emoji id=5372905603695910757>🌙</emoji> <b>Загружаю инфо...</b>')
+	m = await answer(message, '<emoji id=5372905603695910757>🌙</emoji> <b>Загружаю инфо...</b>')
 	try:
 		cpu = f'{psutil.cpu_percent()}%'
 	except:
@@ -53,7 +53,7 @@ async def info(client, message):
 	else:
 		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {vv} устаревшая. Введите <code>{prefix}update</code> для обновления.'
 	
-	await client.send_animation(message.chat.id, animation="xioca.mp4", caption=f'''
+	itext = f'''
 <emoji id=5372905603695910757>🌙</emoji> <b>Xioca
 
 <emoji id=5373141891321699086>😎</emoji> Владелец: {name}
@@ -65,8 +65,20 @@ async def info(client, message):
 <emoji id=5258203794772085854>⚡️</emoji> Использование CPU: <i>~{cpu}</i>
 <emoji id=5359785904535774578>💼</emoji> Использование RAM: <i>~{ram} MB</i>
 
-{platform_name}</b>''')
-	await client.delete_messages(message.chat.id, m.id)
+{platform_name}</b>'''
+	
+	type = db.get("core.main", 'type_info', 'xioca')
+	dildo = db.get('core.main', "info")
+	
+	if type == 'xioca':
+		await answer(message, animation=True, chat_id=message.chat.id, response="xioca.mp4", caption=itext)
+	elif type == 'photo':
+		await answer(message, photo=True, chat_id=message.chat.id, response=dildo, caption=itext)
+	elif type == 'animation':
+		await answer(message, animation=True, chat_id=message.chat.id, response=dildo, caption=itext)
+	else:
+		await answer(message, video=True, chat_id=message.chat.id, response=dildo, caption=itext)
+	await client.delete_messages(message.chat.id, m[0].id)
 
 modules_help["info"] = {
 	f"info": "Информация о юзерботе"

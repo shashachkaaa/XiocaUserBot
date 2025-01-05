@@ -15,7 +15,6 @@ async def update(client, message):
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
     subprocess.run("pkg install wget", shell=True, capture_output=True)
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Проверка обновлений...</b>')
-    subprocess.run("rm -rf version.txt", shell=True, capture_output=True)
     subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
 
   ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
@@ -29,8 +28,7 @@ async def update(client, message):
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
     cursor.execute(f'UPDATE settings SET version = "{v}"')
     connect.commit()
-    # Исключить файлы/папки из обновления
-    subprocess.run("wget --exclude=session.session --exclude=user_data.txt --exclude=db.db https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/*", shell=True, capture_output=True)
+    subprocess.run('git pull')
     pip.main(['install', '-r', 'requirements.txt'])
     await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления установлены. Xioca перезагружается для завершения обновления...</b>')
     db.set(
@@ -45,19 +43,19 @@ async def update(client, message):
     )
     restart()
 
-@Client.on_message(filters.command('restart', prefixes=prefix) & filters.me)
+@Client.on_message(filters.command('restart', prefixes=prefix) & filters.user(allowed))
 async def res(client, message):
+    mes = await answer(message, f'<emoji id=5258420634785947640>🔄</emoji> <b>Перезапускаюсь...</b>')
     db.set(
         "core.updater",
         "restart_info",
         {
             "type": "restart",
             "chat_id": message.chat.id,
-            "message_id": message.id,
+            "message_id": mes[0].id,
             "last_time": time.time()
         },
     )
-    await message.edit_text(f'<emoji id=5258420634785947640>🔄</emoji> <b>Перезапускаюсь...</b>')
     restart()
 
 modules_help["updater"] = {
