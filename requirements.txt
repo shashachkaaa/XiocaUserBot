@@ -1,10 +1,5 @@
 pyrogram
-gtts
-pyttsx3
-g4f
 psutil
-SpeechRecognition
-pydub
 unidecode
 colorama
 pyfiglet

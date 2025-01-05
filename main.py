@@ -29,10 +29,15 @@ client = Client(
 )
 
 app = client
-logging.basicConfig(level=logging.INFO)
+
+logging.basicConfig(format=Style.BRIGHT + '[%(asctime)s] - %(name)s - %(levelname)s - ' + Style.RESET_ALL + '%(message)s', level=logging.INFO)
+
+def randsym():
+	alphabet = string.ascii_letters
+	r = ''.join(random.choices(alphabet, k=5))
+	return r
 
 async def main():
-    logging.basicConfig(level=logging.INFO)
     DeleteAccount.__new__ = None
 
     try:
@@ -49,6 +54,51 @@ async def main():
         os.rename("user_data.txt", "user_data.txt-old")
         restart()
     
+    f = cursor.execute(f"SELECT prefix from settings")
+    if cursor.fetchone() is None:
+    	with open("version.txt", "r") as file:
+    		v = file.readline().strip()
+    		v = v.replace('v = ', '')
+    	cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 'off', 0, 'off', v, 'off'))
+    	connect.commit()
+    	
+    list = []
+    if not db.exists("core.main", "allow"):
+    	db.set("core.main", "allow", 0)
+    	list.append(meid)
+    	db.set("core.main", "allow", list)
+    	restart()
+    else:
+    	pass
+    	
+    chat_list = ["xiocauserbot", 'xiocamods', 'xiocachat']
+    
+    for ch in chat_list:
+    	await app.join_chat(ch)
+    	
+    ver = get_version()
+    vv = ver.replace("'", '')
+    if ver == ver:
+    	tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {vv} актуальная'
+    else:
+    	tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {vv} устаревшая. Введите <code>{prefix}update</code> для обновления.'
+    
+    if info := db.get("core.updater", "restart_info"):
+    	last_time = info["last_time"]
+    	end_time = time.time() - last_time
+    	hours, rem = divmod(end_time, 3600)
+    	minutes, seconds = divmod(rem, 60)
+    	
+    	text = {
+    		"restart": f"<b><emoji id=5258258882022612173>⏲</emoji> Xioca перезагружена за<code>{int(seconds):2d}</code> секунд, но модули еще загружаются!</b>",
+    		"update": f"<b><emoji id=5258258882022612173>⏲</emoji> Обновление успешно завершено! Xioca перезагружена за<code>{int(seconds):2d}</code> секунд, но модули еще загружаются!</b>",
+    		"setpref": f"<b><emoji id=5258258882022612173>⏲</emoji> Префикс успешно установлен! Xioca перезагружена за<code>{int(seconds):2d}</code> секунд, но модули еще загружаются!</b>"
+    	}[info["type"]]
+    	try:
+    		mes = await app.edit_message_text(info["chat_id"], info["message_id"], text)
+    	except:
+    		pass
+
     success_modules = 0
     failed_modules = 0
     
@@ -63,63 +113,42 @@ async def main():
     
     logging.info(f"Импортировано {success_modules} модулей")
     
-    tload = f'<emoji id=5237907553152672597>✅</emoji> Имортировано {success_modules} модулей'
+    tload = f'<emoji id=5875206779196935950>📁</emoji> Импортировано {success_modules} модулей'
     
     if failed_modules:
         logging.warning(f"Не удалось импортировать {failed_modules} модулей")
         tload += f'\n<emoji id=5237993272109967450>❌</emoji> Неудалось имортировать {failed_modules} модулей'
-    
-    f = cursor.execute(f"SELECT prefix from settings")
-    if cursor.fetchone() is None:
-    	with open("version.txt", "r") as file:
-    		v = file.readline().strip()
-    		v = v.replace('v = ', '')
-    	cursor.execute("INSERT INTO settings VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);", ('.', 'off', 'off', 0, 'off', 0, 'off', v, 'off'))
-    	connect.commit()
-    	
-    chat_list = ["xiocauserbot", 'xiocamods', 'xiocachat']
-    
-    for ch in chat_list:
-    	await app.join_chat(ch)
-    
-    msg = db.get('start', 'msg', 0)
-    try:
-    	await app.delete_messages("me", msg)
-    except:
-    	pass
-    	
-    ver = get_version()
-    vv = ver.replace("'", '')
-    if ver == ver:
-    	tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {vv} актуальная'
-    else:
-    	tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {vv} устаревшая. Введите <code>{prefix}update</code> для обновления.'
-    
-    m = await app.send_message(chat_id="me", text=f'''
+        
+    tex = f'''
 <emoji id=5372905603695910757>🌙</emoji> <b>Xioca успешно запущена
 {tv}
 {tload}
 <emoji id=5213363464323479192>🔊</emoji> Основной канал:</b> https://t.me/XiocaUserbot
 <emoji id=5875206779196935950>📁</emoji> <b>Модули:</b> https://t.me/xiocamods
-<emoji id=5465132703458270101>🗯</emoji> <b>Чат:</b> https://t.me/XiocaChat''')
-    db.set('start', 'msg', m.id)
+<emoji id=5465132703458270101>🗯</emoji> <b>Чат:</b> https://t.me/XiocaChat'''
     
-    if info := db.get("core.updater", "restart_info"):
+    try:
+    	info = db.get("core.updater", "restart_info")
     	last_time = info["last_time"]
     	end_time = time.time() - last_time
     	hours, rem = divmod(end_time, 3600)
     	minutes, seconds = divmod(rem, 60)
+    	await mes.edit(f"<b><emoji id=5237907553152672597>✅</emoji> Xioca полностью перезагружена за<code>{int(seconds):2d}</code> секунд!\n{tload}</b>")
+    except Exception as e:
+    	pass
     	
-    	text = {
-    		"restart": f"<b><emoji id=5237907553152672597>✅</emoji> Xioca успешно перезагружена за <code>{int(seconds):2d}</code> секунд!</b>",
-    		"update": f"<b><emoji id=5237907553152672597>✅</emoji> Обновление успешно завершено! Xioca перезагружена за <code>{int(seconds):2d}</code> секунд!</b>",
-    		"setpref": f"<b><emoji id=5237907553152672597>✅</emoji> Префикс успешно установлен! Xioca перезагружена за <code>{int(seconds):2d}</code> секунд!</b>"
-    	}[info["type"]]
-    	try:
-    		await app.edit_message_text(info["chat_id"], info["message_id"], text)
-    	except:
-    		pass
-    	db.remove("core.updater", "restart_info")
+    db.remove("core.updater", "restart_info")
+    
+    msg = db.get('start', 'msg', 0)
+    
+    try:
+    	await app.delete_messages("me", msg)
+    except:
+    	pass
+    
+    m = await app.send_message("me", tex)
+    
+    db.set('start', 'msg', m.id)
     
     await idle()
     await app.stop()
