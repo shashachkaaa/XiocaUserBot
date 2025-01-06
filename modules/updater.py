@@ -27,6 +27,7 @@ async def update(client, message):
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
     cursor.execute(f'UPDATE settings SET version = "{ve}"')
     connect.commit()
+    subprocess.run(['git', 'stash'])
     subprocess.run(['git', 'pull'])
     pip.main(['install', '-r', 'requirements.txt'])
     await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления установлены. Xioca перезагружается для завершения обновления...</b>')
