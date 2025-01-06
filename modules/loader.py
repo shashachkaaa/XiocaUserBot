@@ -68,7 +68,7 @@ async def ml(client, message):
 	
 	if os.path.exists(f"{BASE_PATH}/modules/custom_modules/{module_name}.py"):
 		await client.delete_messages(message.chat.id, message.id)
-		await answer(message, chat_id=message.chat.id, response=f'{BASE_PATH}/modules/custom_modules/{module_name}.py', caption = f'<emoji id=5433653135799228968>📁</emoji> <b>Файл</b> <code>{module_name}</code>\n\n<emoji id=5372905603695910757>🌙</emoji> <code>.lm</code> <b>в ответ на это сообщение, чтобы установить модуль</b>')
+		await answer(message, chat_id=message.chat.id, document=True, response=f'{BASE_PATH}/modules/custom_modules/{module_name}.py', caption = f'<emoji id=5433653135799228968>📁</emoji> <b>Файл</b> <code>{module_name}</code>\n\n<emoji id=5372905603695910757>🌙</emoji> <code>.lm</code> <b>в ответ на это сообщение, чтобы установить модуль</b>')
 	elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
 		await answer(message, '<emoji id=5364241851500997604>⚠️</emoji> <b>Вы пытаетесь поделится системным модулем, сделать это невозможно!!!</b>')
 	else:
