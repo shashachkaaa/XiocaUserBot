@@ -16,27 +16,7 @@ async def answer(
     disable_web_page_preview=False,
     **kwargs
 ) -> List[Message]:
-    """В основном это обычный message.edit, но:
-        - Если содержание сообщения будет больше лимита (4096 символов),
-            то отправится несколько разделённых сообщений
-        - Работает message.reply, если команду вызвал не владелец аккаунта
 
-    Параметры:
-        message (``pyrogram.types.Message`` | ``typing.List[pyrogram.types.Message]``):
-            Сообщение
-
-        response (``str`` | ``typing.Any``):
-            Текст или объект которое нужно отправить
-
-        chat_id (``str`` | ``int``, optional):
-            Чат, в который нужно отправить сообщение
-
-        document/photo (``bool``, optional):
-            Если ``True``, сообщение будет отправлено как документ/фото или по ссылке
-
-        kwargs (``dict``, optional):
-            Параметры отправки сообщения
-    """
     messages: List[Message] = []
 
     if isinstance(message, list):
@@ -149,7 +129,7 @@ def module_help(module_name: str, full=True):
 
 def parse_meta_comments(code: str) -> Dict[str, str]:
     try:
-        groups = META_COMMENTS.search(code).groups()
+        groups = meta_comments.search(code).groups()
     except AttributeError:
         return {}
 
@@ -225,7 +205,7 @@ async def load_module(module_name: str, client: Client, message: Message, core=F
                 client.add_handler(handler, group)
 
     module.__meta__ = meta
-
+    
     return module
 
 def import_lib(lib_name, package_name: str = None):
