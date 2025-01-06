@@ -2,7 +2,7 @@ from utils.imports import *
 from utils.func import *
 from utils.misc import *
 
-@Client.on_message(filters.command('ownerlist', prefixes=prefix) & filters.users(allowed))
+@Client.on_message(filters.command('ownerlist', prefixes=prefix) & filters.user(allowed))
 async def ownerlist(client, message):
 	text = f'<emoji id=5778423822940114949>🛡</emoji> <b>Список пользователей, имеющих доступ к юзерботу:\n\n</b>'
 	
