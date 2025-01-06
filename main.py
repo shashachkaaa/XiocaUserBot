@@ -79,9 +79,9 @@ async def main():
     	
     ver = get_version()
     if ver == ver:
-    	tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {v} актуальная'
+    	tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {ver} актуальная'
     else:
-    	tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {v} устаревшая. Введите <code>{prefix}update</code> для обновления.'
+    	tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {ver} устаревшая. Введите <code>{prefix}update</code> для обновления.'
     
     if info := db.get("core.updater", "restart_info"):
     	last_time = info["last_time"]
