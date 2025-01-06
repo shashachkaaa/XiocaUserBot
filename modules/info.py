@@ -47,9 +47,9 @@ async def info(client, message):
 	with open("version.txt", "r") as file:
 			v = file.readline().strip()
 	if ver == v:
-		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {v} актуальная'
+		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {ver} актуальная'
 	else:
-		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {v} устаревшая. Введите <code>{prefix}update</code> для обновления.'
+		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {ver} устаревшая. Введите <code>{prefix}update</code> для обновления.'
 	
 	itext = f'''
 <emoji id=5372905603695910757>🌙</emoji> <b>Xioca

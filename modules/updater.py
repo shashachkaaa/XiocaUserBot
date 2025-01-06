@@ -10,7 +10,8 @@ async def update(client, message):
     subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt", shell=True, capture_output=True)
     with open("version.txt", "r") as file:
       v = file.readline().strip()
-  except:
+  except Exception as e:
+    print(e)
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
     subprocess.run("pkg install wget -y", shell=True, capture_output=True)
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Проверка обновлений...</b>')
