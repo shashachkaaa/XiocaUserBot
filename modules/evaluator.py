@@ -35,5 +35,6 @@ async def ev(client, message: Message):
     	
 
 modules_help['evaluator'] = {
-	"eval/e [код]": "Интерпретатор python"
+	"eval [код]": "Интерпретатор python",
+	"e [код]": "Интерпретатор python"
 }
