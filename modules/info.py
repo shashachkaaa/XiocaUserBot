@@ -46,12 +46,10 @@ async def info(client, message):
 	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
 	with open("version.txt", "r") as file:
 			v = file.readline().strip()
-			v = v.replace('v = ', '')
-	vv = ver.replace("'", '')
 	if ver == v:
-		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {vv} актуальная'
+		tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {v} актуальная'
 	else:
-		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {vv} устаревшая. Введите <code>{prefix}update</code> для обновления.'
+		tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {v} устаревшая. Введите <code>{prefix}update</code> для обновления.'
 	
 	itext = f'''
 <emoji id=5372905603695910757>🌙</emoji> <b>Xioca
