@@ -4,14 +4,13 @@ from utils.misc import *
 
 @Client.on_message(filters.command(['t', 'terminal'], prefixes=prefix) & filters.user(allowed))
 async def terminal(client, message):
-    code = message.text
-    command = code.replace(f"{prefix}terminal ", "").replace(f"{prefix}t ", "")
-    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    code = " ".join(message.text.split()[1:])
+    process = subprocess.Popen(code.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = process.communicate()
     if process.returncode == 0:
         await answer(message, f'''<emoji id=5339181821135431228>💻</emoji> <b>Команда:</b>
 ```bash
-{command}```
+{code}```
 
 <emoji id=5375360100196163660>🐲</emoji> <b>Вывод:</b>
 ```bash
@@ -20,7 +19,7 @@ async def terminal(client, message):
     else:
         await answer(message, f'''<emoji id=5339181821135431228>💻</emoji> <b>Команда:</b>
 ```bash
-{command}```
+{code}```
 
 <emoji id=5237993272109967450>❌</emoji> <b>Ошибка:</b>
 ```bash
