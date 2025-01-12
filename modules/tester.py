@@ -21,7 +21,7 @@ async def ping(client, message):
 		end_time = time.time() - start_time
 		hours, rem = divmod(end_time, 3600)
 		minutes, seconds = divmod(rem, 60)
-		await answer(m, f'<emoji id=5372905603695910757>🌙</emoji> Пинг: <b>{round((b - a) * 1000)}</b> ms\n<emoji id=5431449001532594346>⚡️</emoji> Прошло времени с момента запуска: <b>{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}</b>')
+		await answer(m, f'<emoji id=5372905603695910757>🌙</emoji> Пинг: <b>{round((b - a) * 1000, 3)}</b> ms\n<emoji id=5431449001532594346>⚡️</emoji> Прошло времени с момента запуска: <b>{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}</b>')
 
 modules_help["tester"] = {
     "ping": "Проверить скорость отклика Telegram",
