@@ -75,7 +75,10 @@ async def main():
     chat_list = ["xiocauserbot", 'xiocamods', 'xiocachat']
     
     for ch in chat_list:
-    	await app.join_chat(ch)
+    	try:
+    		await app.join_chat(ch)
+    	except:
+    		pass
     	
     ver = get_version()
     if ver == ver:
