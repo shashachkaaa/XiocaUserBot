@@ -135,6 +135,24 @@ def parse_meta_comments(code: str) -> Dict[str, str]:
 
     return {groups[i]: groups[i + 1] for i in range(0, len(groups), 2)}
 
+def parse_requirements(requirements_string):
+    """Разбирает строку требований, начиная с "requires" и возвращает список требований.
+
+    Args:
+        requirements_string (str): Строка требований.
+
+    Returns:
+        list[str]: Список требований.
+    """
+
+    requirements = []
+    for line in requirements_string.splitlines():
+        if line.startswith('requires'):
+            a = line.split()[1:]
+            requirements.extend(a)
+
+    return requirements
+
 async def unload_module(module_name: str, client: Client) -> bool:
     path = "modules.custom_modules." + module_name
     if path not in sys.modules:
@@ -161,43 +179,32 @@ async def load_module(module_name: str, client: Client, message: Message, core=F
         code = f.read()
     meta = parse_meta_comments(code)
 
-    packages = meta.get("requires", "").split()
-    req_list.extend(packages)
-
+    packages = parse_requirements(code)
+    
+    packlist = []
+    
+    for p in packages:
+    	b = p.replace("=", '')
+    	c = b.replace("'", "")
+    	d = c.replace('"', '')
+    	e = d.replace(",", "")
+    	f = e.replace(":",  "")
+    	if f == '':
+    		pass
+    	else:
+    		packlist.append(f)
+    
     try:
-        module = importlib.import_module(path)
+    	module = importlib.import_module(path)
     except:
-
-        if core:
-            raise
-
-        if not packages:
-            raise
-            
-        if message:
-            await message.edit_text(f"<emoji id=5370896319210595146>🤔</emoji> <b>Устанавливаю зависимости: {' '.join(packages)}</b>")
-            
-        proc = await asyncio.create_subprocess_exec(
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "-U",
-            *packages,
-        )
-        try:
-            await asyncio.wait_for(proc.wait(), timeout=120)
-        except asyncio.TimeoutError:
-            if message:
-                await message.edit("<emoji id=5237993272109967450>❌</emoji> <b> Не удалось установить зависимости. Попробуйте снова...")
-            raise TimeoutError("timeout while installing requirements") from e
-
-        if proc.returncode != 0:
-            if message:
-                await message.edit(f"<emoji id=5237993272109967450>❌</emoji> <b>Неудалось установить зависимости.\nОшибка: <code>{proc.returncode}</code></b>")
-            raise RuntimeError("failed to install requirements") from e
-
-        module = importlib.import_module(path)
+    	if message:
+    		pl = [f"<emoji id=4971987363145188045>▫️</emoji> {element}" for element in packlist]
+    		pl = "\n".join(pl)
+    		await answer(message, f'<b><emoji id=5370896319210595146>🤔</emoji> Устанавливаю зависимости:\n\n{pl}</b>')
+    	for pack in packlist:
+    		import_lib(pack)
+    	
+    	module = importlib.import_module(path)
 
     for name, obj in vars(module).items():
         if type(getattr(obj, "handlers", [])) == list:
