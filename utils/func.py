@@ -10,7 +10,7 @@ def dev_link(link):
 	for i in list:
 		l = link.replace(i, "")
 	
-	text = f'<a href="https://t.me/{l}">{l}</a>'
+	text = f'<code>@{l}</code>'
 	
 	return text
 
