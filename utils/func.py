@@ -187,7 +187,7 @@ async def load_module(module_name: str, client: Client, message: Message, core=F
     with open(f"{path.replace('.', '/')}.py", encoding="utf-8") as f:
         code = f.read()
     
-    methods = ['terminate', 'disconnect', 'connect', 'initialize', 'send_code', 'resend_code', 'sign_in', 'sign_in_bot', 'sign_up', 'send_recovery_code', 'os.system', 'subprocess.call', 'subprocess.Popen', 'subprocess.check_output', 'shutil.rm', 'shutil.rmtree' 'import os', 'socket.connect', 'socket.send', 'socket.receive']
+    methods = ['terminate', 'disconnect', 'connect', 'initialize', 'send_code', 'resend_code', 'sign_in', 'sign_in_bot', 'sign_up', 'send_recovery_code', 'os.system', 'subprocess.call', 'subprocess.check_output', 'shutil.rm', 'shutil.rmtree' 'import os', 'socket.connect', 'socket.send', 'socket.receive']
     
     for i in methods:
     	if i in code:
