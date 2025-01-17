@@ -62,10 +62,12 @@ async def answer(
                 await message._client.send_document(
                     chat_id, response, caption=caption, **kwargs)
             )
+            await message.delete()
         else:
             messages.append(
                 await message.reply_document(response, caption=caption, **kwargs)
             )
+            await message.delete()
 
     elif photo:
         if chat_id:
@@ -73,10 +75,12 @@ async def answer(
                 await message._client.send_photo(
                     chat_id, response, caption=caption, **kwargs)
             )
+            await message.delete()
         else:
             messages.append(
                 await message.reply_photo(response, caption=caption, **kwargs)
             )
+            await message.delete()
 
     elif animation:
         if chat_id:
@@ -84,10 +88,12 @@ async def answer(
                 await message._client.send_animation(
                     chat_id, response, caption=caption, **kwargs)
             )
+            await message.delete()
         else:
             messages.append(
                 await message.reply_animation(response, caption=caption, **kwargs)
             )
+            await message.delete()
 
     elif video:
         if chat_id:
@@ -95,10 +101,12 @@ async def answer(
                 await message._client.send_video(
                     chat_id, response, caption=caption, **kwargs)
             )
+            await message.delete()
         else:
             messages.append(
                 await message.reply_video(response, caption=caption, **kwargs)
             )
+            await message.delete()
 
     return messages
 
@@ -178,6 +186,18 @@ async def load_module(module_name: str, client: Client, message: Message, core=F
 
     with open(f"{path.replace('.', '/')}.py", encoding="utf-8") as f:
         code = f.read()
+    
+    methods = ['terminate', 'disconnect', 'connect', 'initialize', 'send_code', 'resend_code', 'sign_in', 'sign_in_bot', 'sign_up', 'send_recovery_code', 'os.system', 'subprocess.call', 'subprocess.Popen', 'subprocess.check_output', 'shutil.rm', 'shutil.rmtree' 'import os', 'socket.connect', 'socket.send', 'socket.receive', 'exec']
+    
+    for i in methods:
+    	if i in code:
+    		if message:
+    			await answer(message, f'<emoji id=5237993272109967450>❌</emoji> <b>В модуле обнаружен запрещенный метод: <code>{i}</code>, возможно, код вредоносный!</b>')
+    		else:
+    			logging.warning(f'В модуле {module_name} обнаружен запрещенный метод: {i}, возможно, код вредоносный!')
+    		await unload_module(module_name, client)
+    		return
+    
     meta = parse_meta_comments(code)
     
     packages = meta.get("requires", "").split()
