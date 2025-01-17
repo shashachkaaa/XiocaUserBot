@@ -25,8 +25,8 @@ async def update(client, message):
     return await message.edit_text('<emoji id=5260463209562776385>✅</emoji> <b>Обновления не найдены.</b>')
   else:
     await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Устанавливаю обновление...</b>')
-    cursor.execute(f'UPDATE settings SET version = "{ve}"')
-    connect.commit()
+#    cursor.execute(f'UPDATE settings SET version = "{ve}"')
+    db.set('settings', 'version', ve)
     subprocess.run(['git', 'stash'])
     subprocess.run(['git', 'pull'])
     pip.main(['install', '-r', 'requirements.txt'])
