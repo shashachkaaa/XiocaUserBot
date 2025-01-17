@@ -3,8 +3,10 @@ from utils.func import *
 from utils.misc import *
 
 import traceback
-
-meval = import_lib('meval')
+#meta requires: meval
+#meta developer: shashachkaaa
+#meta pic: https://t.me/Waivegamechat/271187
+#meta description: Интерпретатор python
 from meval import meval
 
 def getattrs(app: Client, message: types.Message):
@@ -35,6 +37,6 @@ async def ev(client, message: Message):
     	
 
 modules_help['evaluator'] = {
-	"eval [код]": "Интерпретатор python",
-	"e [код]": "Интерпретатор python"
+	"eval [код]": "Выполнить код",
+	"e [код]": "Выполнить код"
 }

@@ -28,13 +28,22 @@ async def loadmod(client, message):
     await client.download_media(r.file_id, file_name=f'./modules/custom_modules/{module_name}')
     
     try:
-        await load_module(name, client, message)
+        module, dev, pic, description = await load_module(name, client, message)
     except Exception as e:
         os.remove(f"./modules/custom_modules/{module_name}")
         return await answer(ms, format_exc(e))
+        
+    installed = f"<b><emoji id=5237907553152672597>✅</emoji> Модуль <code>{name}</code> успешно установлен!</b>\n{module_help(name, False, dev, description)}"
+    
+    db.set(name, 'dev', dev)
+    db.set(name, 'pic', pic)
+    db.set(name, 'description', description)
     
     try:
-    	await answer(ms, f"<b><emoji id=5237907553152672597>✅</emoji> Модуль <code>{name}</code> успешно установлен!</b>\n\n{module_help(name, False)}")
+    	if pic == '':
+    		await answer(ms, installed, disable_web_page_preview=True)
+    	else:
+    		await answer(ms, photo=True, chat_id=ms[0].chat.id, response=pic, caption=installed, disable_web_page_preview=True)
     except Exception as e:
     	await answer(ms, format_exc(e))
     	os.remove(f"./modules/custom_modules/{module_name}")
@@ -49,6 +58,7 @@ async def unload_mods(client: Client, message: Message):
     if os.path.exists(f"{BASE_PATH}/modules/custom_modules/{module_name}.py"):
         try:
             await unload_module(module_name, client)
+            db.remove(module_name)
         except Exception as e:
             return await answer(message, format_exc(e))
 

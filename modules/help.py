@@ -36,7 +36,16 @@ async def help_cmd(_, message: Message):
         else:
             await answer(message, text)
     elif message.command[1].lower() in modules_help:
-        await answer(message, module_help(message.command[1].lower()))
+        dev = db.get(message.command[1].lower(), 'dev', '')
+        pic = db.get(message.command[1].lower(), 'pic', '')
+        description = db.get(message.command[1].lower(), 'description', '')
+        	
+        helptext = module_help(message.command[1].lower(), True, dev, description)
+        
+        if pic == '':
+        	await answer(message, helptext, disable_web_page_preview=True)
+        else:
+        	await answer(message, photo=True, chat_id=message.chat.id, response=pic, caption=helptext, disable_web_page_preview=True)
     else:
         command_name = message.command[1].lower()
         for name, commands in modules_help.items():
