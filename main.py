@@ -79,12 +79,6 @@ async def main():
     		await app.join_chat(ch)
     	except:
     		pass
-    	
-    ver = get_version()
-    if ver == ver:
-    	tv = f'<emoji id=5469741319330996757>💫</emoji> Версия: {ver} актуальная'
-    else:
-    	tv = f'<emoji id=5237993272109967450>❌</emoji> Версия: {ver} устаревшая. Введите <code>{prefix}update</code> для обновления.'
     
     if info := db.get("core.updater", "restart_info"):
     	last_time = info["last_time"]
@@ -127,10 +121,12 @@ async def main():
     if failed_modules:
         logging.warning(f"Не удалось импортировать {failed_modules} модулей")
         tload += f'\n<emoji id=5237993272109967450>❌</emoji> Неудалось имортировать {failed_modules} модулей'
+    
+    ver = db.get('core.main', 'version', '0')
         
     tex = f'''
 <emoji id=5372905603695910757>🌙</emoji> <b>Xioca успешно запущена
-{tv}
+<emoji id=5469741319330996757>💫</emoji> Версия: {ver}
 {tload}
 <emoji id=5213363464323479192>🔊</emoji> Основной канал:</b> https://t.me/XiocaUserbot
 <emoji id=5875206779196935950>📁</emoji> <b>Модули:</b> https://t.me/xiocamods
