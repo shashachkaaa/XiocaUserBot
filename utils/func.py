@@ -128,7 +128,7 @@ def module_help(module_name: str, full=True, dev: str = None, description: str =
     if dev == '':
         tdev = ''
     else:
-        tdev = f'<emoji id=6028435952299413210>ℹ</emoji> <b>Разработчик: <i>{dev_link(dev)}</i></b>\n'
+        tdev = f'<emoji id=5321553578840567151>❤</emoji> <b>Разработчик: <i>{dev_link(dev)}</i></b>\n'
         
     if description == '':
         desc = ''
