@@ -23,6 +23,7 @@ async def info(client, message):
 	if system == "Windows":
 		platform_name = "<emoji id=5316891065423241127>🖥</emoji> Windows"
 	elif system == "Linux":
+	       logging.warning(sys.argv[0])
 	       if "termux" in sys.argv[0]:
 	       	platform_name = "<emoji id=5407025283456835913>📱</emoji> Termux"
 	       elif "p3droid" in sys.argv[0]:
@@ -43,7 +44,7 @@ async def info(client, message):
 		await message.edit_text('<emoji id=5373310679241466020>🌀</emoji> <b>Установка пакетов...</b>')
 		subprocess.run("pkg install wget -y", shell=True, capture_output=True)
 		subprocess.run("wget https://raw.githubusercontent.com/shashachkaaa/XiocaUserBot/refs/heads/main/version.txt")
-	ver = cursor.execute(f'SELECT version from settings').fetchone()[0]
+	ver = db.get('core.main', 'version', '0')
 	with open("version.txt", "r") as file:
 			v = file.readline().strip()
 	if ver == v:
