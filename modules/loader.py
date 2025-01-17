@@ -41,9 +41,9 @@ async def loadmod(client, message):
     
     try:
     	if pic == '':
-    		await answer(ms, installed, disable_web_page_preview=True)
+    		await answer(ms, installed)
     	else:
-    		await answer(ms, photo=True, chat_id=ms[0].chat.id, response=pic, caption=installed, disable_web_page_preview=True)
+    		await answer(ms, photo=True, chat_id=ms[0].chat.id, response=pic, caption=installed)
     except Exception as e:
     	await answer(ms, format_exc(e))
     	os.remove(f"./modules/custom_modules/{module_name}")
