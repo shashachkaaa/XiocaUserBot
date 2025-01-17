@@ -107,7 +107,13 @@ async def main():
     
     for path in Path("modules").rglob("*.py"):
         try:
-        	await load_module(path.stem, app, core="custom_modules" not in path.parent.parts, message = None)
+        	module, dev, pic, description = await load_module(path.stem, app, core="custom_modules" not in path.parent.parts, message = None)
+        	try:
+        		db.set(path.stem, 'dev', dev)
+        		db.set(path.stem, 'pic', pic)
+        		db.set(path.stem, 'description', description)
+        	except:
+        		pass
         except:
         	logging.warning(f"Не удалось загрузить модуль {path.stem}", exc_info=True)
         	failed_modules += 1
