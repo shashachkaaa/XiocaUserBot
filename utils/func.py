@@ -4,6 +4,16 @@ from utils.misc import *
 
 forbidden_methods = ['input', 'help', 'dir', 'eval', 'exec', 'os.system', 'os.popen', 'subprocess.call', 'requests.post', 'requests.get']
 
+def dev_link(link):
+	list = ["@", 'http://t.me/', 'https://t.me/', 't.me', '/']
+	
+	for i in list:
+		l = link.replace(i, "")
+	
+	text = f'<a href="https://t.me/{l}">{l}</a>'
+	
+	return text
+
 async def answer(
     message: Union[Message, List[Message]],
     response: Union[str, Any],
@@ -112,13 +122,26 @@ def format_exc(e: Exception, suffix="") -> str:
         f"<code>{e.__class__.__name__}: {e}</code>\n\n<b>{suffix}</b>"
     )
 
-def module_help(module_name: str, full=True):
+def module_help(module_name: str, full=True, dev: str = None, description: str = None):
     commands = modules_help[module_name]
+    
+    if dev == '':
+        tdev = ''
+    else:
+        tdev = f'<emoji id=6028435952299413210>ℹ</emoji> <b>Разработчик: <i>{dev_link(dev)}</i></b>\n'
+        
+    if description == '':
+        desc = ''
+    else:
+    	desc = f'<emoji id=6039451237743595514>📎</emoji> <b>Описание:</b> <i>{description}</i>\n'
 
     help_text = (
-        f"<b><emoji id=5238224607638468926>❓</emoji> Помощь по модулю <code>{module_name}</code>\n\n<emoji id=5226512880362332956>📖</emoji> Команды:</b>\n"
+        f"""<b><emoji id=5238224607638468926>❓</emoji> Помощь по модулю <code>{module_name}</code>
+{tdev}{desc}
+<emoji id=5226512880362332956>📖</emoji> Команды:</b>\n"""
         if full
-        else "<b><emoji id=5226512880362332956>📖</emoji> Команды:</b>\n"
+        else f"""{tdev}{desc}
+<b><emoji id=5226512880362332956>📖</emoji> Команды:</b>\n"""
     )
     for command, desc in commands.items():
         cmd = command.split(maxsplit=1)
@@ -128,30 +151,8 @@ def module_help(module_name: str, full=True):
     return help_text
 
 def parse_meta_comments(code: str) -> Dict[str, str]:
-    try:
-        groups = meta_comments.search(code).groups()
-    except AttributeError:
-        return {}
-
-    return {groups[i]: groups[i + 1] for i in range(0, len(groups), 2)}
-
-def parse_requirements(requirements_string):
-    """Разбирает строку требований, начиная с "requires" и возвращает список требований.
-
-    Args:
-        requirements_string (str): Строка требований.
-
-    Returns:
-        list[str]: Список требований.
-    """
-
-    requirements = []
-    for line in requirements_string.splitlines():
-        if line.startswith('requires'):
-            a = line.split()[1:]
-            requirements.extend(a)
-
-    return requirements
+    meta_comments = re.findall(r"^#meta (.*): (.*)", code, re.MULTILINE)
+    return {group[0]: group[1] for group in meta_comments}
 
 async def unload_module(module_name: str, client: Client) -> bool:
     path = "modules.custom_modules." + module_name
@@ -178,30 +179,22 @@ async def load_module(module_name: str, client: Client, message: Message, core=F
     with open(f"{path.replace('.', '/')}.py", encoding="utf-8") as f:
         code = f.read()
     meta = parse_meta_comments(code)
-
-    packages = parse_requirements(code)
+    
+    packages = meta.get("requires", "").split()
+    dev = meta.get("developer", "")
+    pic = meta.get("pic", "")
+    description = meta.get("description", "")
     
     packlist = []
-    
-    for p in packages:
-    	b = p.replace("=", '')
-    	c = b.replace("'", "")
-    	d = c.replace('"', '')
-    	e = d.replace(",", "")
-    	f = e.replace(":",  "")
-    	if f == '':
-    		pass
-    	else:
-    		packlist.append(f)
     
     try:
     	module = importlib.import_module(path)
     except:
     	if message:
-    		pl = [f"<emoji id=4971987363145188045>▫️</emoji> {element}" for element in packlist]
+    		pl = [f"<emoji id=4971987363145188045>▫️</emoji> {element}" for element in packages]
     		pl = "\n".join(pl)
     		await answer(message, f'<b><emoji id=5370896319210595146>🤔</emoji> Устанавливаю зависимости:\n\n{pl}</b>')
-    	for pack in packlist:
+    	for pack in packages:
     		import_lib(pack)
     	
     	module = importlib.import_module(path)
@@ -213,7 +206,7 @@ async def load_module(module_name: str, client: Client, message: Message, core=F
 
     module.__meta__ = meta
     
-    return module
+    return module, dev, pic, description
 
 def import_lib(lib_name, package_name: str = None):
     if package_name is None:
