@@ -2,8 +2,6 @@ from utils.imports import *
 from utils.db import *
 from utils.misc import *
 
-forbidden_methods = ['input', 'help', 'dir', 'eval', 'exec', 'os.system', 'os.popen', 'subprocess.call', 'requests.post', 'requests.get']
-
 def dev_link(link):
 	list = ["@", 'http://t.me/', 'https://t.me/', 't.me', '/']
 	
