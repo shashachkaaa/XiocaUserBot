@@ -56,7 +56,26 @@ async def help_cmd(_, message: Message):
                     return await answer(message, f'''<emoji id=5372905603695910757>🌙</emoji> Помощь по модулю <code>{name}</code></b>
 
 <emoji id=4971987363145188045>▫️</emoji> <code>{prefix}{cmd[0]}</code> {' <code>' + cmd[1] + '</code>' if len(cmd) > 1 else ''} — <i>{cmd_desc}</i>''')
-        await answer(message, f"<emoji id=5237993272109967450>❌</emoji> <b>Модуль {command_name} отсутствует</b>")
+        matches = process.extract(command_name, modules_help.keys(), limit=3)
+        
+        best_module_name = []
+        
+        if matches[0][1] < 100:
+        	for best in matches:
+        		best_module_name.append(best[0])
+        else:
+        	return await answer(message, f"<emoji id=5237993272109967450>❌</emoji> <b>Модуль {command_name} отсутствует</b>")
+        
+        dev = db.get(best_module_name[0], 'dev', '')
+        pic = db.get(best_module_name[0], 'pic', '')
+        description = db.get(best_module_name[0], 'description', '')
+        
+        helptext = module_help(best_module_name[0], True, dev, description, True)
+        
+        if pic == '':
+        	await answer(message, helptext)
+        else:
+        	await answer(message, photo=True, chat_id=message.chat.id, response=pic, caption=helptext)
 
 modules_help["help"] = {
     "help [модуль/команда]": "Получить информацию по модулю"
