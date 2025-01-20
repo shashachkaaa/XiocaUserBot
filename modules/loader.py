@@ -28,7 +28,10 @@ async def loadmod(client, message):
     await client.download_media(r.file_id, file_name=f'./modules/custom_modules/{module_name}')
     
     try:
-        module, dev, pic, description = await load_module(name, client, message)
+        try:
+        	module, dev, pic, description = await load_module(name, client, message)
+        except TypeError:
+        	return
     except Exception as e:
         os.remove(f"./modules/custom_modules/{module_name}")
         return await answer(ms, format_exc(e))
@@ -54,21 +57,36 @@ async def unload_mods(client: Client, message: Message):
         return await answer(message, "<emoji id=5238224607638468926>❓</emoji> <b>Что выгружать?</b>")
 
     module_name = message.command[1].lower()
-
+    
+    matches = process.extract(module_name, modules_help.keys(), limit=3)
+    
+    best_module_name = []
+    
+    if matches[0][1] < 100:
+    	for best in matches:
+    		best_module_name.append(best[0])
+    
+    try:
+    	module_name = best_module_name[0]
+    	nm = '<emoji id=5312383351217201533>⚠️</emoji> <b>Точного совпадения не найдено, поэтому применен ближайший результат</b>'
+    except:
+    	module_name = message.command[1].lower()
+    	nm = ''
+    
     if os.path.exists(f"{BASE_PATH}/modules/custom_modules/{module_name}.py"):
         try:
             await unload_module(module_name, client)
-            db.remove(module_name)
+            db.drop_table(module_name)
         except Exception as e:
             return await answer(message, format_exc(e))
 
         os.remove(f"{BASE_PATH}/modules/custom_modules/{module_name}.py")
-        await answer(message, f'<emoji id=5258130763148172425>🗑</emoji> <b>Модуль <code>{module_name.replace(".py", "")}</code> успешно выгружен!</b>')
+        await answer(message, f'<emoji id=5258130763148172425>🗑</emoji> <b>Модуль <code>{module_name.replace(".py", "")}</code> успешно выгружен!</b>\n\n{nm}')
     elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
-        await answer(message, '<emoji id=5364241851500997604>⚠️</emoji> <b>Вы пытаетесь выгрузить системный модуль, сделать это невозможно!!!</b>')
+        await answer(message, f'<emoji id=5312383351217201533>⚠️</emoji> <b>Вы пытаетесь выгрузить системный модуль {module_name}, сделать это невозможно!\n\n{nm}</b>')
     else:
         await answer(message, f'<emoji id=5237993272109967450>❌</emoji> <b>Модуль {module_name} не найден</b>')
-
+        
 @Client.on_message(filters.command("ml", prefix) & filters.user(allowed))
 async def ml(client, message):
 	try:
@@ -76,11 +94,25 @@ async def ml(client, message):
 	except:
 		return await answer(message, '<emoji id=5237993272109967450>❌</emoji> <b>Введите название модуля</b>')
 	
+	matches = process.extract(module_name, modules_help.keys(), limit=3)
+    
+	best_module_name = []
+    
+	if matches[0][1] < 100:
+		for best in matches:
+			best_module_name.append(best[0])
+    
+	try:
+		module_name = best_module_name[0]
+		nm = '<emoji id=5312383351217201533>⚠️</emoji> <b>Точного совпадения не найдено, поэтому применен ближайший результат</b>'
+	except:
+		module_name = message.command[1].lower()
+		nm = ''
+	
 	if os.path.exists(f"{BASE_PATH}/modules/custom_modules/{module_name}.py"):
-		await client.delete_messages(message.chat.id, message.id)
-		await answer(message, chat_id=message.chat.id, document=True, response=f'{BASE_PATH}/modules/custom_modules/{module_name}.py', caption = f'<emoji id=5433653135799228968>📁</emoji> <b>Файл</b> <code>{module_name}</code>\n\n<emoji id=5372905603695910757>🌙</emoji> <code>.lm</code> <b>в ответ на это сообщение, чтобы установить модуль</b>')
+		await answer(message, chat_id=message.chat.id, document=True, response=f'{BASE_PATH}/modules/custom_modules/{module_name}.py', caption = f'<emoji id=5433653135799228968>📁</emoji> <b>Файл</b> <code>{module_name}</code>\n\n<emoji id=5372905603695910757>🌙</emoji> <code>.lm</code> <b>в ответ на это сообщение, чтобы установить модуль</b>\n\n{nm}')
 	elif os.path.exists(f"{BASE_PATH}/modules/{module_name}.py"):
-		await answer(message, '<emoji id=5364241851500997604>⚠️</emoji> <b>Вы пытаетесь поделится системным модулем, сделать это невозможно!!!</b>')
+		await answer(message, chat_id=message.chat.id, document=True, response=f'{BASE_PATH}/modules/{module_name}.py', caption = f'<emoji id=5433653135799228968>📁</emoji> <b>Файл</b> <code>{module_name}</code>\n\n<emoji id=5372905603695910757>🌙</emoji> <code>.lm</code> <b>в ответ на это сообщение, чтобы установить модуль</b>\n\n{nm}')
 	else:
 		await answer(message, f'<emoji id=5237993272109967450>❌</emoji> <b>Модуль {module_name} не найден</b>')
 
