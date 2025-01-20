@@ -3,8 +3,9 @@ from types import ModuleType
 from typing import Dict
 from pathlib import Path
 from utils.db import db
-req = ["kurigram", "gtts", "pyttsx3", "psutil", "SpeechRecognition", 'pydub', "colorama", "unidecode", "pyfiglet", "pytz", "fade", "sympy"]
+req = ["fuzzywuzzy", "kurigram", "gtts", "pyttsx3", "psutil", "SpeechRecognition", 'pydub', "colorama", "unidecode", "pyfiglet", "pytz", "fade", "sympy"]
 try:
+	from fuzzywuzzy import process
 	from pyrogram.handlers import MessageHandler
 	from pyrogram import Client, filters, idle, errors, types
 	from pyrogram.raw.functions.account import GetAuthorizations, DeleteAccount

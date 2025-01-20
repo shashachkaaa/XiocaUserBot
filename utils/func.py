@@ -41,6 +41,7 @@ async def answer(
                 await message._client.send_message(
                     chat_id, outputs[0], **kwargs)
             )
+            await message.delete()
         else:
             messages.append(
                 await (
@@ -128,8 +129,13 @@ def format_exc(e: Exception, suffix="") -> str:
         f"<code>{e.__class__.__name__}: {e}</code>\n\n<b>{suffix}</b>"
     )
 
-def module_help(module_name: str, full=True, dev: str = None, description: str = None):
+def module_help(module_name: str, full=True, dev: str = None, description: str = None, nearest_module = False):
     commands = modules_help[module_name]
+    
+    if nearest_module:
+    	nm = '<emoji id=5312383351217201533>⚠️</emoji> <b>Точного совпадения не найдено, поэтому показан ближайший результат</b>\n'
+    else:
+    	nm = ''
     
     if dev == '':
         tdev = ''
@@ -143,7 +149,7 @@ def module_help(module_name: str, full=True, dev: str = None, description: str =
 
     help_text = (
         f"""<b><emoji id=5238224607638468926>❓</emoji> Помощь по модулю <code>{module_name}</code>
-{tdev}{desc}
+{nm}{tdev}{desc}
 <emoji id=5226512880362332956>📖</emoji> Команды:</b>\n"""
         if full
         else f"""{tdev}{desc}

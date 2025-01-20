@@ -33,7 +33,11 @@ class Database:
     def remove(self, module: str, variable: str):
         """Remove key from database"""
         raise NotImplementedError
-
+    
+    def drop_table(self, module: str):
+        """Drop table in database"""
+        raise NotImplementedError
+        
     def get_collection(self, module: str) -> dict:
         """Get database for selected module"""
         raise NotImplementedError
@@ -133,6 +137,12 @@ class SqliteDatabase(Database):
             collection[row["var"]] = self._parse_row(row)
 
         return collection
+    
+    def drop_table(self, module: str):
+    	sql = f"DROP TABLE IF EXISTS '{module}'"
+    	self._execute(module, sql)
+    	self._conn.commit()
+    	return
     
     def exists(self, module: str, variable: str) -> bool:
     	sql = f"SELECT COUNT(*) FROM '{module}' WHERE var=:var"
