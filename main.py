@@ -122,7 +122,7 @@ async def main():
         logging.warning(f"Не удалось импортировать {failed_modules} модулей")
         tload += f'\n<emoji id=5237993272109967450>❌</emoji> Неудалось имортировать {failed_modules} модулей'
     
-    ver = db.get('core.main', 'version', '0')
+    ver = db.get('core.main', 'version', get_version())
         
     tex = f'''
 <emoji id=5372905603695910757>🌙</emoji> <b>Xioca успешно запущена
