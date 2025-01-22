@@ -199,9 +199,22 @@ async def load_module(module_name: str, client: Client, message: Message, core=F
     			await answer(message, f'<emoji id=5237993272109967450>❌</emoji> <b>В модуле обнаружен запрещенный метод: <code>{i}</code>, возможно, код вредоносный!</b>')
     		else:
     			logging.warning(f'В модуле {module_name} обнаружен запрещенный метод: {i}, возможно, код вредоносный!')
-    		await unload_module(module_name, client)
+    		os.remove(f"./modules/custom_modules/{module_name}.py")
     		return
     
+    module_xio = ['@Client.on_message', 'modules_help']
+    
+    for i in module_xio:
+    	if i not in code:
+    		if i == '@Client.on_message':
+    			if message:
+    				await answer(message, f'<emoji id=5237993272109967450>❌</emoji> <b>В модуле отсутствует хендлер для выполнения функции, возможно, это не модуль для Xioca</b>')
+    		else:
+    			if message:
+    				await answer(message, f'<emoji id=5237993272109967450>❌</emoji> <b>В модуле отсутствует переменная modules_help для вывода команд в модуле, он необходим в модулях для Xioca</b>')
+    		os.remove(f"./modules/custom_modules/{module_name}.py")
+    		return
+    		
     meta = parse_meta_comments(code)
     
     packages = meta.get("requires", "").split()
